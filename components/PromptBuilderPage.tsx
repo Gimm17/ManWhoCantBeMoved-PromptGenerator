@@ -6,9 +6,11 @@ import CameraSection from './builder/CameraSection';
 import PromptOutput from './output/PromptOutput';
 import MobilePromptBar from './output/MobilePromptBar';
 import { useBuilder } from '@/context/BuilderContext';
+import { useViewCounter } from '@/hooks/useViewCounter';
 
 export default function PromptBuilderPage() {
   const { dispatch } = useBuilder();
+  const views = useViewCounter();
 
   return (
     <div className="min-h-screen bg-page">
@@ -25,6 +27,14 @@ export default function PromptBuilderPage() {
               <span className="text-[9px] md:text-[10px] text-forest/40 font-medium tracking-wider uppercase hidden sm:block">Prompt Studio</span>
             </div>
           </div>
+
+          {/* View counter */}
+          {views !== null && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest/5 text-forest/60 text-xs font-medium animate-in fade-in duration-500">
+              <span className="material-symbols-outlined text-sm">visibility</span>
+              {views.toLocaleString('id-ID')} views
+            </div>
+          )}
 
           {/* Reset button */}
           <button
