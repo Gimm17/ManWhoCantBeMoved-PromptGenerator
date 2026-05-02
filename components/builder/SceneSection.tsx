@@ -21,6 +21,7 @@ export const WEATHER_OPTIONS = [
 ];
 
 export const FURNITURE_OPTIONS = [
+  { value:'_none', label:'— Tidak ada —', prompt:'' },
   { value:'kursi-indomaret', label:'Kursi plastik putih Indomaret', prompt:'small round white plastic table with white mono-block plastic chairs, iconic Indonesian Indomaret style' },
   { value:'kursi-alfamart', label:'Kursi plastik merah Alfamart', prompt:'small round white plastic table with red plastic chairs, Alfamart style' },
   { value:'bangku-angkringan', label:'Bangku angkringan kayu', prompt:'low wooden angkringan bench with narrow wooden plank seating' },
@@ -42,6 +43,8 @@ export const FURNITURE_OPTIONS = [
 ];
 
 export const BG_OPTIONS = [
+  { value:'_none', label:'— Tidak ada —', prompt:'' },
+  { value:'_custom', label:'✏️ Custom (tulis sendiri)', prompt:'' },
   { value:'motor-indomaret', label:'Motor parkir + papan Indomaret', prompt:'motorcycles parked to the side, Indomaret signage (red-yellow-blue) overhead, fluorescent store light spilling onto pavement' },
   { value:'gerobak-lampu', label:'Gerobak + lampu kuning', prompt:'street food gerobak cart visible in background, yellow sodium streetlamp casting warm glow' },
   { value:'city-skyline', label:'City skyline', prompt:'city skyline with blinking lights visible in distance, dark sky above' },
@@ -77,11 +80,20 @@ export const TOD_OPTIONS = [
   { value:'fluorescent-cold', label:'Fluorescent dingin', prompt:'cold harsh fluorescent tube lighting, slightly greenish-white cast, institutional clinical atmosphere' },
 ];
 
-/** Flatten scene presets with group for SearchableSelect */
-const SCENE_OPTIONS = SCENE_PRESETS.map(p => {
-  const groupLabel = p.group === 'indonesia' ? '🇮🇩 Indonesia Vibes' : p.group === 'cinematic' ? '🎬 Cinematic' : '✨ Fantasy / Anime';
-  return { value: p.id, label: p.label, group: groupLabel };
-});
+/** Flatten scene presets with group for SearchableSelect + add Custom option */
+const SCENE_OPTIONS = [
+  { value: 'custom', label: '✏️ Custom (tulis sendiri)', group: '⚙️ Lainnya' },
+  ...SCENE_PRESETS.map(p => {
+    const groupLabel = p.group === 'indonesia' ? '🇮🇩 Indonesia Vibes' : p.group === 'cinematic' ? '🎬 Cinematic' : '✨ Fantasy / Anime';
+    return { value: p.id, label: p.label, group: groupLabel };
+  }),
+];
+
+/** Food options with "none" at top */
+const FOOD_SELECT_OPTIONS = [
+  { value: '_none', label: '— Tidak ada —', group: '' },
+  ...FOOD_OPTIONS.map(f => ({ value: f.value, label: f.label, group: f.group })),
+];
 
 export default function SceneSection() {
   const { state, dispatch } = useBuilder();
@@ -104,14 +116,16 @@ export default function SceneSection() {
           />
         </div>
 
-        {/* Custom detail */}
+        {/* Custom detail — always visible, more prominent when "custom" is selected */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm text-forest-muted">Custom detail (opsional)</label>
+          <label className="text-sm text-forest-muted">
+            {state.scenePresetId === 'custom' ? 'Deskripsi scene (wajib)' : 'Custom detail (opsional)'}
+          </label>
           <input
             type="text"
             value={state.sceneCustomDetail}
             onChange={e => dispatch({ type: 'SET_SCENE_FIELD', field: 'sceneCustomDetail', value: e.target.value })}
-            placeholder="Add specific details..."
+            placeholder={state.scenePresetId === 'custom' ? 'Deskripsikan lokasi scene kamu...' : 'Add specific details...'}
             className="stitch-input"
           />
         </div>
@@ -138,7 +152,7 @@ export default function SceneSection() {
           </div>
         </div>
 
-        {/* Furniture — searchable */}
+        {/* Furniture — searchable, clearable */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm text-forest-muted">Furniture / seating</label>
           <SearchableSelect
@@ -148,17 +162,17 @@ export default function SceneSection() {
           />
         </div>
 
-        {/* Food — searchable */}
+        {/* Food — searchable, clearable */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm text-forest-muted">Food &amp; drinks on table</label>
           <SearchableSelect
             value={state.food}
             onValueChange={v => dispatch({ type: 'SET_SCENE_FIELD', field: 'food', value: v })}
-            options={FOOD_OPTIONS.map(f => ({ value: f.value, label: f.label, group: f.group }))}
+            options={FOOD_SELECT_OPTIONS}
           />
         </div>
 
-        {/* Background — searchable */}
+        {/* Background — searchable, clearable, custom */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm text-forest-muted">Background props</label>
           <SearchableSelect
@@ -167,6 +181,20 @@ export default function SceneSection() {
             options={BG_OPTIONS}
           />
         </div>
+
+        {/* Custom background input — only shows when _custom is selected */}
+        {state.bgProps === '_custom' && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-forest-muted">Deskripsi background</label>
+            <input
+              type="text"
+              value={state.bgCustom}
+              onChange={e => dispatch({ type: 'SET_SCENE_FIELD', field: 'bgCustom', value: e.target.value })}
+              placeholder="Deskripsikan background yang kamu inginkan..."
+              className="stitch-input"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

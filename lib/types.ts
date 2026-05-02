@@ -13,6 +13,7 @@ export interface BuilderState {
   furniture: string;
   food: string;
   bgProps: string;
+  bgCustom: string;
   characterSlots: CharacterSlot[];
 
   userOutfit: string;

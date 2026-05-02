@@ -10,6 +10,7 @@ export const INITIAL_STATE: BuilderState = {
   furniture: 'kursi-indomaret',
   food: 'golda-taro-chitato',
   bgProps: 'motor-indomaret',
+  bgCustom: '',
   characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
   userOutfit: 'ref-photo',
   userPose: 'duduk-stare',
@@ -23,6 +24,10 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
   switch (action.type) {
     case 'APPLY_SCENE_PRESET': {
       if (!action.presetId) return state;
+      // "custom" = user wants to set everything manually
+      if (action.presetId === 'custom') {
+        return { ...state, scenePresetId: 'custom' };
+      }
       const preset = SCENE_PRESETS.find(p => p.id === action.presetId);
       if (!preset) return state;
       return {

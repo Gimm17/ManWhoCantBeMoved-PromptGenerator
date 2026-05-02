@@ -13,6 +13,11 @@ function lookup<T extends { value: string; prompt: string }>(options: T[], id: s
   return options.find(o => o.value === id)?.prompt ?? id;
 }
 
+/** Check if a value is "none" or empty */
+function isNone(val: string): boolean {
+  return !val || val === '_none' || val === '_custom';
+}
+
 const DISCLAIMER = `[CREATIVE FAN ART — FICTIONAL CROSSOVER SCENE — FOR ENTERTAINMENT PURPOSES ONLY — NON-COMMERCIAL]`;
 
 const FILM_NOTE = `
@@ -29,20 +34,29 @@ FACE FIDELITY — REFERENCE PERSON — NON-NEGOTIABLE
 
 export function buildPrompt(state: BuilderState): string {
   const preset = SCENE_PRESETS.find(p => p.id === state.scenePresetId);
-  const loc = state.sceneCustomDetail || preset?.loc || state.scenePresetId;
+  const loc = state.sceneCustomDetail || preset?.loc || (state.scenePresetId === 'custom' ? 'custom location as described' : state.scenePresetId);
 
   // Resolve all IDs to prompt text
   const todText = lookup(TOD_OPTIONS, state.tod);
   const weatherText = lookup(WEATHER_OPTIONS, state.weather);
-  const furnitureText = lookup(FURNITURE_OPTIONS, state.furniture);
-  const foodText = lookup(FOOD_OPTIONS, state.food);
-  const bgPropsText = lookup(BG_OPTIONS, state.bgProps);
   const userOutfitText = lookup(OUTFIT_OPTIONS, state.userOutfit);
   const userPoseText = lookup(POSES, state.userPose);
   const vibeText = lookup(VIBES, state.vibe);
   const cameraAngleText = lookup(CAMERA_ANGLES, state.cameraAngle);
   const photoStyleText = lookup(PHOTO_STYLES, state.photoStyle);
   const compositionText = lookup(COMPOSITIONS, state.composition);
+
+  // Nullable fields — only include if set
+  const furnitureText = !isNone(state.furniture) ? lookup(FURNITURE_OPTIONS, state.furniture) : '';
+  const foodText = !isNone(state.food) ? lookup(FOOD_OPTIONS, state.food) : '';
+
+  // Background: custom text or preset or none
+  let bgPropsText = '';
+  if (state.bgProps === '_custom' && state.bgCustom) {
+    bgPropsText = state.bgCustom;
+  } else if (!isNone(state.bgProps)) {
+    bgPropsText = lookup(BG_OPTIONS, state.bgProps);
+  }
 
   let hasFilmChar = false;
   const charLines: string[] = [];
@@ -65,11 +79,17 @@ export function buildPrompt(state: BuilderState): string {
     `${i}. [REFERENCE PERSON — real individual from uploaded reference photo]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText}\n   • Art style: fully photorealistic, natural cinematic lighting`
   );
 
+  // Build setting details — only include non-empty lines
+  const settingLines: string[] = [];
+  if (furnitureText) settingLines.push(`Furniture / seating: ${furnitureText}`);
+  if (foodText) settingLines.push(`On the table: ${foodText}`);
+  if (bgPropsText) settingLines.push(`Background: ${bgPropsText}`);
+
   const sections = [
     DISCLAIMER,
     `CONCEPT\n"The Man Who Can't Be Moved" — a fictional gathering of iconic characters who all share the same emotional experience: being left behind by someone they loved, unable to fully move on. This is a creative fan art crossover scene.`,
     `SCENE\nLocation: ${loc}\nTime: ${todText}\nAtmosphere: ${weatherText}`,
-    `SETTING DETAILS\nFurniture / seating: ${furnitureText}\nOn the table: ${foodText}\nBackground: ${bgPropsText}`,
+    settingLines.length > 0 ? `SETTING DETAILS\n${settingLines.join('\n')}` : '',
     `CHARACTERS (strict left-to-right order in frame)\n${charLines.join('\n\n')}`,
     `MOOD / EMOTIONAL ATMOSPHERE\n${vibeText}`,
     `CAMERA\nAngle: ${cameraAngleText}\nComposition: ${compositionText}`,
