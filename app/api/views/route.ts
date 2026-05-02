@@ -1,7 +1,11 @@
 import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
 
-const redis = Redis.fromEnv();
+// Use the KV_REST_API_* env vars injected by Vercel's Upstash integration
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+});
 
 // POST — increment & return count (called once per session)
 export async function POST() {
