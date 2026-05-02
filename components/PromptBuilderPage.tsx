@@ -3,6 +3,7 @@ import SceneSection from './builder/SceneSection';
 import CharacterSection from './builder/CharacterSection';
 import VibeSection from './builder/VibeSection';
 import CameraSection from './builder/CameraSection';
+import TutorialButton from './builder/TutorialButton';
 import PromptOutput from './output/PromptOutput';
 import MobilePromptBar from './output/MobilePromptBar';
 import { useBuilder } from '@/context/BuilderContext';
@@ -60,6 +61,7 @@ export default function PromptBuilderPage() {
           <CharacterSection />
           <VibeSection />
           <CameraSection />
+          <TutorialButton />
         </div>
 
         {/* Prompt output — desktop only */}
