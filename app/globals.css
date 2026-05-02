@@ -1,0 +1,220 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Stitch design system tokens */
+  --color-page: #F6F4E8;
+  --color-sage-mint: #C0E1D2;
+  --color-light-sage: #E5EEE4;
+  --color-dusty-rose: #DC9B9B;
+  --color-rose-dark: #855050;
+  --color-rose-container: #613233;
+  --color-forest: #111F14;
+  --color-forest-muted: #524343;
+  --color-sage-secondary: #476459;
+  --color-sage-tertiary: #586159;
+  --color-surface-variant: #d6e7d6;
+  --color-input-border: rgba(173, 206, 191, 0.5);
+}
+
+:root {
+  --background: #F6F4E8;
+  --foreground: #111F14;
+  --card: #E5EEE4;
+  --card-foreground: #111F14;
+  --popover: #F6F4E8;
+  --popover-foreground: #111F14;
+  --primary: #855050;
+  --primary-foreground: #ffffff;
+  --secondary: #476459;
+  --secondary-foreground: #ffffff;
+  --muted: #E5EEE4;
+  --muted-foreground: #524343;
+  --accent: #C0E1D2;
+  --accent-foreground: #111F14;
+  --destructive: #ba1a1a;
+  --border: rgba(173, 206, 191, 0.5);
+  --input: rgba(173, 206, 191, 0.5);
+  --ring: #C0E1D2;
+  --chart-1: #DC9B9B;
+  --chart-2: #C0E1D2;
+  --chart-3: #855050;
+  --chart-4: #476459;
+  --chart-5: #586159;
+  --radius: 0.75rem;
+  --sidebar: #E5EEE4;
+  --sidebar-foreground: #111F14;
+  --sidebar-primary: #855050;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #C0E1D2;
+  --sidebar-accent-foreground: #111F14;
+  --sidebar-border: rgba(173, 206, 191, 0.5);
+  --sidebar-ring: #C0E1D2;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-page text-forest antialiased;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Custom scrollbar — soft sage */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C0E1D2; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a5ceba; }
+
+/* Stitch card */
+.stitch-card {
+  background: #E5EEE4;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(45, 59, 47, 0.04);
+}
+
+/* Stitch input */
+.stitch-input {
+  background: #F6F4E8;
+  border: 1px solid rgba(173, 206, 191, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #111F14;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+  width: 100%;
+}
+.stitch-input:focus {
+  border-color: #476459;
+}
+.stitch-input::placeholder {
+  color: #847373;
+}
+
+/* Stitch select trigger override */
+[data-slot="select-trigger"] {
+  background: #F6F4E8 !important;
+  border: 1px solid rgba(173, 206, 191, 0.5) !important;
+  border-radius: 0.5rem !important;
+  color: #111F14 !important;
+  font-size: 0.875rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  transition: border-color 0.2s ease-in-out !important;
+}
+[data-slot="select-trigger"]:focus,
+[data-slot="select-trigger"]:focus-visible {
+  border-color: #476459 !important;
+  box-shadow: none !important;
+}
+[data-slot="select-value"] {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+}
+
+/* Stitch select popover */
+[data-slot="select-content"] {
+  background: #F6F4E8 !important;
+  border: 1px solid rgba(173, 206, 191, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(45, 59, 47, 0.08) !important;
+  max-width: min(calc(100vw - 2rem), 500px) !important;
+}
+[data-slot="select-item"] {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+[data-slot="select-item"]:focus {
+  background: #E5EEE4 !important;
+  color: #111F14 !important;
+}
+[data-slot="select-label"] {
+  color: #476459 !important;
+  font-weight: 600 !important;
+}
+
+/* Vibe chip */
+.vibe-chip {
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.vibe-chip-inactive {
+  background: #F6F4E8;
+  border: 1px solid rgba(173, 206, 191, 0.5);
+  color: #524343;
+}
+.vibe-chip-inactive:hover {
+  background: #E5EEE4;
+}
+.vibe-chip-active {
+  background: #DC9B9B;
+  border: 1px solid #DC9B9B;
+  color: #613233;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(220, 155, 155, 0.4);
+}
+
+/* Sheet override for light theme */
+[data-slot="sheet-content"] {
+  background: #E5EEE4 !important;
+}
+[data-slot="sheet-overlay"] {
+  background: rgba(17, 31, 20, 0.2) !important;
+}

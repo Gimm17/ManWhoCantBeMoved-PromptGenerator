@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Can't Be Moved - Prompt Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "surface-container-lowest": "#ffffff",
+                            "tertiary": "#586159",
+                            "secondary-fixed-dim": "#adcebf",
+                            "outline": "#847373",
+                            "surface-variant": "#d6e7d6",
+                            "on-primary-fixed-variant": "#69393a",
+                            "surface-container-highest": "#d6e7d6",
+                            "on-primary": "#ffffff",
+                            "surface-container": "#e2f2e1",
+                            "on-secondary": "#ffffff",
+                            "primary": "#855050",
+                            "tertiary-fixed": "#dce5db",
+                            "surface-tint": "#855050",
+                            "on-tertiary-container": "#39423b",
+                            "tertiary-fixed-dim": "#c0c9bf",
+                            "surface-container-low": "#e8f8e6",
+                            "surface-dim": "#cedecd",
+                            "primary-fixed": "#ffdad9",
+                            "outline-variant": "#d6c2c1",
+                            "on-secondary-fixed": "#022017",
+                            "surface-bright": "#edfeec",
+                            "tertiary-container": "#a5aea5",
+                            "on-secondary-fixed-variant": "#2f4d41",
+                            "on-error": "#ffffff",
+                            "on-surface": "#111f14",
+                            "primary-fixed-dim": "#fab5b5",
+                            "surface": "#edfeec",
+                            "on-tertiary-fixed-variant": "#404942",
+                            "on-primary-container": "#613233",
+                            "secondary-container": "#c6e7d8",
+                            "inverse-primary": "#fab5b5",
+                            "secondary-fixed": "#c9eadb",
+                            "primary-container": "#dc9b9b",
+                            "inverse-surface": "#263428",
+                            "background": "#edfeec",
+                            "on-secondary-container": "#4b695d",
+                            "on-surface-variant": "#524343",
+                            "on-background": "#111f14",
+                            "secondary": "#476459",
+                            "inverse-on-surface": "#e5f5e4",
+                            "on-primary-fixed": "#350f11",
+                            "on-tertiary": "#ffffff",
+                            "on-error-container": "#93000a",
+                            "surface-container-high": "#dceddb",
+                            "error": "#ba1a1a",
+                            "error-container": "#ffdad6",
+                            "on-tertiary-fixed": "#151d18"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-sm": "8px",
+                            "margin-page": "32px",
+                            "stack-lg": "32px",
+                            "container-max": "1100px",
+                            "stack-md": "16px",
+                            "gutter": "24px"
+                    },
+                    "fontFamily": {
+                            "body-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "label-caps": ["Inter"],
+                            "h2": ["Inter"],
+                            "body-sm": ["Inter"],
+                            "h1": ["Inter"]
+                    },
+                    "fontSize": {
+                            "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                            "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                            "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                            "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F6F4E8; } /* Specific override requested by prompt for overall background */
+        .card-bg { background-color: #E5EEE4; }
+        .input-bg { background-color: #F6F4E8; }
+        .input-border { border-color: rgba(173, 206, 191, 0.5); }
+    </style>
+</head>
+<body class="font-body-md text-body-md text-on-surface antialiased min-h-screen">
+<!-- TopAppBar JSON Execution -->
+<header class="bg-[#C0E1D2] dark:bg-emerald-900/20 fixed top-0 w-full z-50 border-b border-emerald-200/50 dark:border-emerald-800/50 shadow-[0_2px_8px_rgba(45,59,47,0.04)] flex justify-between items-center px-8 h-16 w-full max-w-full backdrop-blur-sm">
+<div class="text-xl font-bold text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">music_note</span>
+</div>
+<span>Can't Be Moved</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center font-['Inter'] font-medium text-sm tracking-wide">
+<a class="text-emerald-800/70 dark:text-emerald-400/70 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors duration-200 ease-in-out duration-200 cursor-pointer" href="#">Explore</a>
+<a class="text-emerald-800/70 dark:text-emerald-400/70 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors duration-200 ease-in-out duration-200 cursor-pointer" href="#">Archive</a>
+<a class="text-emerald-900 dark:text-emerald-50 border-b-2 border-[#DC9B9B] pb-1 ease-in-out duration-200 cursor-pointer" href="#">Studio</a>
+<a class="text-emerald-800/70 dark:text-emerald-400/70 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors duration-200 ease-in-out duration-200 cursor-pointer" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-[#DC9B9B] dark:text-rose-300 font-['Inter'] font-medium text-sm tracking-wide ease-in-out duration-200 cursor-pointer hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors duration-200">New Prompt</button>
+<span class="material-symbols-outlined text-emerald-800/70 dark:text-emerald-400/70 ease-in-out duration-200 cursor-pointer hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors duration-200">account_circle</span>
+</div>
+</header>
+<main class="max-w-container-max mx-auto pt-[96px] pb-margin-page px-margin-page flex flex-col md:flex-row gap-gutter relative items-start">
+<!-- Left Column: Builder (60%) -->
+<div class="w-full md:w-[60%] flex flex-col gap-stack-lg">
+<!-- Section 1: Location & Setting -->
+<section class="card-bg rounded-xl p-stack-md shadow-[0_2px_8px_rgba(45,59,47,0.04)] flex flex-col gap-stack-sm">
+<h2 class="font-label-caps text-label-caps text-secondary mb-2">LOCATION &amp; SETTING</h2>
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Scene preset</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Depan Indomaret — malam</option>
+</select>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Custom detail (opsional)</label>
+<input class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full" placeholder="Add specific details..." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-stack-sm mt-2">
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Time of day</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Late night</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Weather</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Clear</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Furniture / seating</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Kursi plastik putih Indomaret</option>
+</select>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Food &amp; drinks on table</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Golda kopi + Taro + Chitato</option>
+</select>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Background props</label>
+<select class="input-bg border input-border rounded-lg px-3 py-2 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Motor parkir + papan Indomaret</option>
+</select>
+</div>
+</section>
+<!-- Section 2: Characters -->
+<section class="card-bg rounded-xl p-stack-md shadow-[0_2px_8px_rgba(45,59,47,0.04)] flex flex-col gap-stack-md">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-label-caps text-label-caps text-secondary">CHARACTERS</h2>
+<span class="font-label-caps text-label-caps text-primary-container">(max 8)</span>
+</div>
+<!-- User Slot Card -->
+<div class="input-bg rounded-lg border border-dashed border-primary-container p-stack-md flex flex-col gap-stack-sm relative">
+<div class="flex justify-between items-start w-full">
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-primary-container flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span> YOU
+                            </span>
+<span class="bg-surface-container rounded-full px-2 py-0.5 font-label-caps text-[10px] text-secondary">ref photo</span>
+</div>
+<span class="font-label-caps text-[10px] text-primary-container tracking-wider">EXACT FACE MATCH</span>
+</div>
+<div class="flex gap-stack-sm mt-2 items-start">
+<button class="w-16 h-16 rounded-lg border input-border flex items-center justify-center bg-surface-container-lowest text-secondary hover:bg-surface-container transition-colors duration-200">
+<span class="material-symbols-outlined">add_a_photo</span>
+</button>
+<div class="flex-1 flex flex-col gap-2">
+<select class="input-bg border input-border rounded-lg px-3 py-1.5 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Casual hoodie &amp; jeans</option>
+</select>
+<select class="input-bg border input-border rounded-lg px-3 py-1.5 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Sitting leaning forward, relaxed</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Character Slot Card -->
+<div class="input-bg rounded-lg border border-surface-variant p-stack-md flex flex-col gap-stack-sm relative">
+<div class="flex justify-between items-center w-full">
+<span class="bg-surface-container rounded-full px-2 py-0.5 font-label-caps text-[10px] text-secondary">Slot 1</span>
+<button class="font-label-caps text-label-caps text-primary-container hover:opacity-80 transition-opacity">Remove</button>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<select class="input-bg border input-border rounded-lg px-3 py-1.5 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Male friend, casual</option>
+</select>
+<select class="input-bg border input-border rounded-lg px-3 py-1.5 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Standing near bike</option>
+</select>
+<select class="input-bg border input-border rounded-lg px-3 py-1.5 font-body-sm text-body-sm focus:ring-0 focus:border-secondary transition-colors outline-none w-full appearance-none">
+<option>Default Art Style</option>
+</select>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg border border-dashed border-tertiary-fixed text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200 flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> Add character slot
+                </button>
+</section>
+<!-- Section 3: Mood / Vibe -->
+<section class="card-bg rounded-xl p-stack-md shadow-[0_2px_8px_rgba(45,59,47,0.04)] flex flex-col gap-stack-sm">
+<h2 class="font-label-caps text-label-caps text-secondary mb-2">MOOD / VIBE</h2>
+<div class="flex flex-wrap gap-2">
+<button class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-body-sm text-body-sm shadow-[0_2px_8px_rgba(220,155,155,0.4)] transition-all duration-200">Nongkrong santai</button>
+<button class="input-bg border input-border text-on-surface-variant px-4 py-1.5 rounded-full font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200">Cinematic</button>
+<button class="input-bg border input-border text-on-surface-variant px-4 py-1.5 rounded-full font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200">Melancholic</button>
+<button class="input-bg border input-border text-on-surface-variant px-4 py-1.5 rounded-full font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200">Energetic</button>
+<button class="input-bg border input-border text-on-surface-variant px-4 py-1.5 rounded-full font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200">Mysterious</button>
+<button class="input-bg border input-border text-on-surface-variant px-4 py-1.5 rounded-full font-body-sm text-body-sm hover:bg-surface-container transition-colors duration-200">Cozy</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Prompt Output (40% Sticky) -->
+<div class="w-full md:w-[40%] md:sticky md:top-[96px]">
+<section class="card-bg rounded-xl p-stack-md shadow-[0_2px_8px_rgba(45,59,47,0.04)] flex flex-col gap-stack-md h-auto">
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<h2 class="font-label-caps text-label-caps text-secondary">GENERATED PROMPT</h2>
+<span class="font-body-sm text-[11px] text-tertiary">453 words</span>
+</div>
+<button class="bg-primary-container text-on-primary-container font-body-sm text-body-sm px-4 py-2 rounded-lg hover:opacity-90 transition-opacity duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">content_copy</span> Copy Prompt
+                    </button>
+</div>
+<div class="input-bg rounded-lg p-stack-md border input-border w-full flex-grow min-h-[300px]">
+<p class="font-mono text-body-sm text-on-surface leading-relaxed whitespace-pre-wrap">A highly detailed, realistic photograph of an Indonesian convenience store (Indomaret) at late night, clear weather. 
+
+The scene is set outside the store, illuminated by the bright fluorescent light spilling from the glass storefront. In the foreground, there are signature white plastic chairs and a small table. On the table, scattered casual snacks: a bottle of Golda coffee, a bag of Taro, and Chitato chips. 
+
+Main Subject: A person resembling the provided reference photo (EXACT FACE MATCH), wearing a casual hoodie and jeans, sitting leaning forward in a relaxed posture. 
+
+Secondary Subject: A male friend, dressed casually, standing near a parked motorcycle in the background. The iconic Indomaret glowing sign is visible.
+
+The overall mood is "Nongkrong santai" (relaxed hanging out), capturing an authentic, cozy, everyday slice-of-life urban moment. Soft ambient shadows, high visual fidelity.</p>
+</div>
+</section>
+</div>
+</main>
+</body></html>
