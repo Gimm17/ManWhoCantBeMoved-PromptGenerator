@@ -19,6 +19,8 @@ export interface CoupleSlot {
 export interface VideoScene {
   id: string;
   cameraMovement: string;
+  cameraFocus: string;
+  sceneAction: string;
   transition: string;
   sceneMood: string;
   description: string;

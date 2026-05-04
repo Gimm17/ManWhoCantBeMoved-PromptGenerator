@@ -2,7 +2,7 @@ import { CHARACTERS } from '@/data/characters';
 import { COUPLES } from '@/data/couples';
 import { SCENE_PRESETS } from '@/data/scenes';
 import { POSES } from '@/data/poses';
-import { CAMERA_MOVEMENTS, TRANSITIONS, SCENE_MOODS } from '@/data/videoScenes';
+import { CAMERA_MOVEMENTS, CAMERA_FOCUS, TRANSITIONS, SCENE_MOODS, SCENE_ACTIONS } from '@/data/videoScenes';
 import { TOD_OPTIONS, WEATHER_OPTIONS, FURNITURE_OPTIONS, BG_OPTIONS } from '@/components/builder/SceneSection';
 import { OUTFIT_OPTIONS } from '@/components/builder/UserSlotCard';
 import { VIBES } from '@/components/builder/VibeSection';
@@ -84,6 +84,8 @@ function buildSingleScenePrompt(
   sceneContext: string
 ): string {
   const camMove = lookup(CAMERA_MOVEMENTS, scene.cameraMovement);
+  const camFocus = lookup(CAMERA_FOCUS, scene.cameraFocus);
+  const sceneAction = lookup(SCENE_ACTIONS, scene.sceneAction);
   const transition = lookup(TRANSITIONS, scene.transition);
   const mood = lookup(SCENE_MOODS, scene.sceneMood);
   const dur = scene.durationSeconds;
@@ -96,7 +98,8 @@ function buildSingleScenePrompt(
 
   const sections = [
     header,
-    `[CAMERA: ${camMove}]`,
+    `[CAMERA MOVEMENT: ${camMove}]`,
+    `[CAMERA FOCUS: ${camFocus}]`,
     '',
     'VISUAL SETUP:',
     sceneContext,
@@ -104,15 +107,18 @@ function buildSingleScenePrompt(
     'CHARACTERS IN SCENE:',
     characterSummary,
     '',
+    'WHAT CHARACTERS ARE DOING:',
+    sceneAction,
+    '',
     `SCENE MOOD:`,
     mood,
     '',
-    scene.description ? `SCENE DIRECTION:\n${scene.description}` : '',
+    scene.description ? `ADDITIONAL DIRECTION:\n${scene.description}` : '',
     '',
     'ACTION TIMELINE:',
-    `0s–${beat1End}s: Opening beat — camera begins ${scene.cameraMovement.replace(/-/g, ' ')}, establishing the scene. Characters are in their initial positions.`,
-    `${beat1End}s–${beat2End}s: Middle beat — the emotional core of this scene. Subtle character movements and micro-expressions reveal inner emotions. ${scene.description || 'The tension between characters becomes visible through body language.'}`,
-    `${beat2End}s–${dur}s: Closing beat — the scene reaches its emotional peak or settles into resolution. Final character reaction before transition.`,
+    `0s–${beat1End}s: Opening beat — ${camMove}. ${sceneAction.split('.')[0] || 'Characters are in their initial positions'}.`,
+    `${beat1End}s–${beat2End}s: Middle beat — the emotional core. Camera ${scene.cameraFocus.includes('closeup') ? 'holds tight on the subject' : 'captures the scene'}. ${scene.description || 'Subtle micro-expressions and body language reveal inner emotions.'}`,
+    `${beat2End}s–${dur}s: Closing beat — emotional peak or settling. Final character reaction before ${sceneIndex < totalScenes - 1 ? 'transition' : 'end'}.`,
     '',
     'AUDIO DIRECTION:',
     'Ambient: environmental sounds matching the location (traffic, nature, crowd murmur)',
@@ -126,6 +132,7 @@ function buildSingleScenePrompt(
     '• [YOU / Reference Person] face must remain 100% faithful to uploaded reference photo',
     '• Consistent lighting throughout the scene matching the established time of day',
     '• Camera movement must be smooth and cinematic — no jarring or artificial motion',
+    '• Character movements must be natural and subtle — no exaggerated or robotic motions',
     `• Total duration must not exceed ${dur} seconds`,
   ].filter(Boolean);
 

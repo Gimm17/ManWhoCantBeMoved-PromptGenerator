@@ -4,13 +4,15 @@ import { nanoid } from 'nanoid';
 import { useBuilder } from '@/context/BuilderContext';
 import { buildVideoPrompt } from '@/lib/buildVideoPrompt';
 import { VideoScene } from '@/lib/types';
-import { CAMERA_MOVEMENTS, TRANSITIONS, SCENE_MOODS } from '@/data/videoScenes';
+import { CAMERA_MOVEMENTS, CAMERA_FOCUS, TRANSITIONS, SCENE_MOODS, SCENE_ACTIONS } from '@/data/videoScenes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 function createDefaultScene(): VideoScene {
   return {
     id: nanoid(),
     cameraMovement: 'push-in',
+    cameraFocus: 'all-wide',
+    sceneAction: 'diam-stare',
     transition: 'slow-fade',
     sceneMood: 'tense-silence',
     description: '',
@@ -116,9 +118,31 @@ export default function VideoPromptSection() {
 
             {/* Scene controls */}
             <div className="flex flex-col gap-2 mt-1">
+              {/* Scene action — what characters are doing */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-medium text-forest-muted">🎭 Karakter lagi ngapain?</label>
+                <Select value={scene.sceneAction} onValueChange={v => updateScene(scene.id, 'sceneAction', v)}>
+                  <SelectTrigger><SelectValue options={SCENE_ACTIONS} /></SelectTrigger>
+                  <SelectContent>
+                    {SCENE_ACTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Camera focus — who/what to focus on */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-medium text-forest-muted">🎯 Fokus kamera ke siapa?</label>
+                <Select value={scene.cameraFocus} onValueChange={v => updateScene(scene.id, 'cameraFocus', v)}>
+                  <SelectTrigger><SelectValue options={CAMERA_FOCUS} /></SelectTrigger>
+                  <SelectContent>
+                    {CAMERA_FOCUS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Camera movement */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-medium text-forest-muted">Camera movement</label>
+                <label className="text-[11px] font-medium text-forest-muted">🎥 Gerakan kamera</label>
                 <Select value={scene.cameraMovement} onValueChange={v => updateScene(scene.id, 'cameraMovement', v)}>
                   <SelectTrigger><SelectValue options={CAMERA_MOVEMENTS} /></SelectTrigger>
                   <SelectContent>
@@ -129,7 +153,7 @@ export default function VideoPromptSection() {
 
               {/* Scene mood */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-medium text-forest-muted">Scene mood</label>
+                <label className="text-[11px] font-medium text-forest-muted">💭 Mood scene</label>
                 <Select value={scene.sceneMood} onValueChange={v => updateScene(scene.id, 'sceneMood', v)}>
                   <SelectTrigger><SelectValue options={SCENE_MOODS} /></SelectTrigger>
                   <SelectContent>
@@ -140,7 +164,7 @@ export default function VideoPromptSection() {
 
               {/* Transition */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-medium text-forest-muted">Transition ke scene berikutnya</label>
+                <label className="text-[11px] font-medium text-forest-muted">✂️ Transisi ke scene berikutnya</label>
                 <Select value={scene.transition} onValueChange={v => updateScene(scene.id, 'transition', v)}>
                   <SelectTrigger><SelectValue options={TRANSITIONS} /></SelectTrigger>
                   <SelectContent>
@@ -151,11 +175,11 @@ export default function VideoPromptSection() {
 
               {/* Custom scene direction */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-medium text-forest-muted">Scene direction <span className="text-forest/30">(opsional)</span></label>
+                <label className="text-[11px] font-medium text-forest-muted">📝 Arahan tambahan <span className="text-forest/30">(opsional)</span></label>
                 <textarea
                   value={scene.description}
                   onChange={e => updateScene(scene.id, 'description', e.target.value)}
-                  placeholder="Deskripsi tambahan untuk scene ini... misal: karakter A berdiri lalu pergi"
+                  placeholder="Misal: char A lirik ke kamu, lalu buang muka. Kamu ambil napas berat..."
                   className="stitch-input min-h-[60px] resize-none text-xs"
                   rows={2}
                 />
