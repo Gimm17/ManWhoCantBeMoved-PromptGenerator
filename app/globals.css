@@ -122,10 +122,15 @@
 .stitch-card {
   background: #E5EEE4;
   border-radius: 0.75rem;
-  padding: 1rem;
+  padding: 0.75rem;
   box-shadow: 0 2px 8px rgba(45, 59, 47, 0.04);
   max-width: 100%;
   overflow: hidden;
+}
+@media (min-width: 768px) {
+  .stitch-card {
+    padding: 1rem;
+  }
 }
 
 /* Stitch input */

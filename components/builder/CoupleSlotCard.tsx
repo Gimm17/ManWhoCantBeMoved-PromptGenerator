@@ -55,7 +55,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
   const char2Name = selectedCouple ? selectedCouple.char2PromptName.split('(')[0].trim() : 'Karakter 2';
 
   return (
-    <div className="bg-page rounded-lg border border-surface-variant p-4 flex flex-col gap-2">
+    <div className="bg-page rounded-lg border border-surface-variant p-3 flex flex-col gap-2">
       {/* Header */}
       <div className="flex justify-between items-center w-full">
         <span className="bg-light-sage rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.05em] text-dusty-rose">
