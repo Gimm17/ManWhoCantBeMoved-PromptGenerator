@@ -124,6 +124,8 @@
   border-radius: 0.75rem;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(45, 59, 47, 0.04);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Stitch input */
