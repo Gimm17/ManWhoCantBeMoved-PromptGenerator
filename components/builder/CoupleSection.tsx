@@ -8,16 +8,11 @@ export default function CoupleSection() {
 
   return (
     <section className="stitch-card flex flex-col gap-4 border-dusty-rose/20">
-      <div className="flex flex-col gap-1 mb-1">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.05em] text-dusty-rose">
-            💔 Between / Beside Couple
-          </h2>
-          <span className="text-xs font-semibold uppercase tracking-[0.05em] text-forest/30">(max 2)</span>
-        </div>
-        <p className="text-[11px] text-forest/50 leading-relaxed">
-          Duduk di <strong>tengah</strong> atau di <strong>samping</strong> couple yang sudah putus/cerai. Awkward level: 100%.
-        </p>
+      <div className="flex items-center gap-2 mb-1">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.05em] text-dusty-rose">
+          💔 Between / Beside Couple
+        </h2>
+        <span className="text-xs font-semibold uppercase tracking-[0.05em] text-forest/30">(max 2)</span>
       </div>
 
       {/* Couple slots */}
