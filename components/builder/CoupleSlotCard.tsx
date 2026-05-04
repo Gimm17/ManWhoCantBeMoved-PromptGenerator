@@ -59,7 +59,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
   const char2Name = selectedCouple ? selectedCouple.char2PromptName.split('(')[0].trim() : 'Karakter 2';
 
   return (
-    <div className="bg-page rounded-lg border border-dusty-rose/30 p-4 flex flex-col gap-2">
+    <div className="bg-page rounded-lg border border-dusty-rose/30 p-4 flex flex-col gap-2 overflow-hidden min-w-0">
       {/* Header */}
       <div className="flex justify-between items-center w-full">
         <span className="bg-dusty-rose/15 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.05em] text-dusty-rose">
@@ -73,7 +73,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
       </div>
 
       {/* Stacked controls */}
-      <div className="flex flex-col gap-2 mt-1">
+      <div className="flex flex-col gap-2 mt-1 min-w-0">
         {/* Couple pair select — searchable */}
         <SearchableSelect
           value={slot.coupleKey || ''}
@@ -84,7 +84,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
 
         {/* Breakup info badge */}
         {selectedCouple && (
-          <div className="bg-dusty-rose/8 border border-dusty-rose/20 rounded-md px-3 py-2 text-xs text-forest/70 leading-relaxed">
+          <div className="bg-dusty-rose/8 border border-dusty-rose/20 rounded-md px-3 py-2 text-xs text-forest/70 leading-relaxed break-words overflow-hidden">
             <span className="font-semibold text-dusty-rose">{selectedCouple.source}</span>
             <span className="text-forest/40 mx-1.5">—</span>
             <span className="italic">{selectedCouple.breakupReason}</span>

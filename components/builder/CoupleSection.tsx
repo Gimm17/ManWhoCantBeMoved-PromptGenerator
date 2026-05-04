@@ -7,7 +7,7 @@ export default function CoupleSection() {
   const canAdd = state.coupleSlots.length < 2;
 
   return (
-    <section className="stitch-card flex flex-col gap-4 border-dusty-rose/20">
+    <section className="stitch-card flex flex-col gap-4 border-dusty-rose/20 overflow-hidden">
       <div className="flex items-center gap-2 mb-1">
         <h2 className="text-xs font-semibold uppercase tracking-[0.05em] text-dusty-rose">
           💔 Between / Beside Couple
