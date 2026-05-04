@@ -43,9 +43,22 @@ export default function TutorialButton() {
               <li>🖼️ Upload <strong>reference photo</strong> wajahmu, lalu generate!</li>
             </ol>
 
+            {/* Video animation section */}
+            <div className="mt-3 p-2.5 rounded-lg bg-sage-mint/20 border border-sage-mint/30">
+              <p className="text-[11px] font-semibold text-forest/70 mb-1.5">🎬 Opsional: Animasikan gambar jadi video</p>
+              <ol className="text-[11px] text-forest/60 leading-relaxed space-y-1 list-none">
+                <li>1. Generate gambar dulu pakai prompt di atas</li>
+                <li>2. Klik <strong>🎬 Generate Video Prompt</strong> di bawah Camera &amp; Style</li>
+                <li>3. Atur scene, fokus kamera, aksi karakter, dll</li>
+                <li>4. <strong>Copy</strong> prompt video per scene</li>
+                <li>5. Di Gemini, <strong>upload gambar hasil generate</strong> + paste prompt video</li>
+                <li>6. Generate! Gambarmu akan jadi video ~7 detik per scene</li>
+              </ol>
+            </div>
+
             {/* Tip */}
             <div className="mt-3 p-2.5 rounded-lg bg-dusty-rose/8 border border-dusty-rose/15 text-[11px] text-forest/60 leading-relaxed">
-              💡 <strong>Tip:</strong> Pakai foto wajah close-up yang jelas. Gemini 2.0 Flash atau Flux memberikan hasil terbaik.
+              💡 <strong>Tip:</strong> Pakai foto wajah close-up yang jelas. Gemini 2.0 Flash untuk gambar, Gemini Veo untuk video.
             </div>
           </div>
         </div>
