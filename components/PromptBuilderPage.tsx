@@ -4,6 +4,7 @@ import CharacterSection from './builder/CharacterSection';
 import CoupleSection from './builder/CoupleSection';
 import VibeSection from './builder/VibeSection';
 import CameraSection from './builder/CameraSection';
+import VideoPromptSection from './builder/VideoPromptSection';
 import TutorialButton from './builder/TutorialButton';
 import PromptOutput from './output/PromptOutput';
 import MobilePromptBar from './output/MobilePromptBar';
@@ -63,6 +64,7 @@ export default function PromptBuilderPage() {
           <CoupleSection />
           <VibeSection />
           <CameraSection />
+          <VideoPromptSection />
           <TutorialButton />
         </div>
 

@@ -16,6 +16,15 @@ export interface CoupleSlot {
   artStyle: string;
 }
 
+export interface VideoScene {
+  id: string;
+  cameraMovement: string;
+  transition: string;
+  sceneMood: string;
+  description: string;
+  durationSeconds: number;
+}
+
 export interface BuilderState {
   scenePresetId: string;
   sceneCustomDetail: string;
