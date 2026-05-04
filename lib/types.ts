@@ -5,6 +5,17 @@ export interface CharacterSlot {
   artStyle: string;
 }
 
+export interface CoupleSlot {
+  id: string;
+  coupleKey: string | null;
+  userPosition: 'between' | 'beside';
+  couplePose: string;
+  advancedMode: boolean;
+  char1Pose: string;
+  char2Pose: string;
+  artStyle: string;
+}
+
 export interface BuilderState {
   scenePresetId: string;
   sceneCustomDetail: string;
@@ -15,6 +26,7 @@ export interface BuilderState {
   bgProps: string;
   bgCustom: string;
   characterSlots: CharacterSlot[];
+  coupleSlots: CoupleSlot[];
 
   userOutfit: string;
   userPose: string;
@@ -30,6 +42,9 @@ export type BuilderAction =
   | { type: 'ADD_CHARACTER_SLOT' }
   | { type: 'REMOVE_CHARACTER_SLOT'; id: string }
   | { type: 'UPDATE_CHARACTER_SLOT'; id: string; field: keyof CharacterSlot; value: string | null }
+  | { type: 'ADD_COUPLE_SLOT' }
+  | { type: 'REMOVE_COUPLE_SLOT'; id: string }
+  | { type: 'UPDATE_COUPLE_SLOT'; id: string; field: keyof CoupleSlot; value: string | null }
   | { type: 'SET_USER_FIELD'; field: 'userOutfit' | 'userPose'; value: string | null }
   | { type: 'SET_VIBE'; value: string | null }
   | { type: 'SET_CAMERA_FIELD'; field: 'cameraAngle' | 'photoStyle' | 'composition'; value: string | null }

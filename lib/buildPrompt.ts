@@ -1,7 +1,10 @@
 import { CHARACTERS } from '@/data/characters';
+import { COUPLES } from '@/data/couples';
+import { COUPLE_POSES } from '@/data/couplePoses';
 import { SCENE_PRESETS } from '@/data/scenes';
 import { FOOD_OPTIONS } from '@/data/food';
 import { POSES } from '@/data/poses';
+import { COUPLE_CHAR_POSES } from '@/components/builder/CoupleSlotCard';
 import { ART_STYLES, PHOTO_STYLES, CAMERA_ANGLES, COMPOSITIONS } from '@/data/styles';
 import { TOD_OPTIONS, WEATHER_OPTIONS, FURNITURE_OPTIONS, BG_OPTIONS } from '@/components/builder/SceneSection';
 import { OUTFIT_OPTIONS } from '@/components/builder/UserSlotCard';
@@ -62,6 +65,79 @@ export function buildPrompt(state: BuilderState): string {
   const charLines: string[] = [];
   let i = 1;
 
+  // ── Check for active couple slots ──
+  const activeCouples = state.coupleSlots.filter(s => s.coupleKey);
+  const hasCouples = activeCouples.length > 0;
+
+  // ── Build couple character entries ──
+  const coupleContextLines: string[] = [];
+
+  activeCouples.forEach(slot => {
+    const couple = COUPLES.find(c => c.id === slot.coupleKey);
+    if (!couple) return;
+    if (couple.char1IsFilmLiveAction || couple.char2IsFilmLiveAction) hasFilmChar = true;
+    const couplePoseText = COUPLE_POSES.find(p => p.value === slot.couplePose)?.prompt ?? slot.couplePose;
+    const artText = lookup(ART_STYLES, slot.artStyle);
+
+    // Resolve individual poses (advanced mode)
+    const resolveCharPose = (poseId: string): string => {
+      if (!poseId) return '';
+      if (COUPLE_CHAR_POSES[poseId]) return COUPLE_CHAR_POSES[poseId];
+      return lookup(POSES, poseId);
+    };
+    const c1PoseText = slot.advancedMode && slot.char1Pose ? resolveCharPose(slot.char1Pose) : '';
+    const c2PoseText = slot.advancedMode && slot.char2Pose ? resolveCharPose(slot.char2Pose) : '';
+
+    // Build char line with optional individual pose
+    const c1PoseLine = c1PoseText ? `\n   • Pose: ${c1PoseText}` : '';
+    const c2PoseLine = c2PoseText ? `\n   • Pose: ${c2PoseText}` : '';
+
+    if (slot.userPosition === 'between') {
+      charLines.push(
+        `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
+      );
+      i++;
+      charLines.push(
+        `${i}. [REFERENCE PERSON — YOU — sitting BETWEEN this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting awkwardly between two people who used to be together\n   • Art style: fully photorealistic, natural cinematic lighting`
+      );
+      i++;
+      charLines.push(
+        `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
+      );
+      i++;
+
+      coupleContextLines.push(
+        `BETWEEN COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
+        `Source: "${couple.source}"\n` +
+        `Why they broke up: ${couple.breakupReason}\n` +
+        `Couple dynamic: ${couplePoseText}\n` +
+        `Position: [REFERENCE PERSON / YOU] is sitting BETWEEN them — caught in the middle of this unresolved tension. The emotional weight is palpable. YOU are the awkward third presence between two people who once loved each other.`
+      );
+    } else {
+      charLines.push(
+        `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
+      );
+      i++;
+      charLines.push(
+        `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
+      );
+      i++;
+      charLines.push(
+        `${i}. [REFERENCE PERSON — YOU — sitting BESIDE this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting next to the couple, witnessing their uncomfortable silence\n   • Art style: fully photorealistic, natural cinematic lighting`
+      );
+      i++;
+
+      coupleContextLines.push(
+        `BESIDE COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
+        `Source: "${couple.source}"\n` +
+        `Why they broke up: ${couple.breakupReason}\n` +
+        `Couple dynamic: ${couplePoseText}\n` +
+        `Position: [REFERENCE PERSON / YOU] is sitting BESIDE them — an outside witness to the heavy silence between two people who used to be everything to each other.`
+      );
+    }
+  });
+
+  // ── Build individual character entries ──
   state.characterSlots.forEach(slot => {
     if (!slot.characterKey) return;
     const char = CHARACTERS.find(c => c.id === slot.characterKey);
@@ -75,9 +151,12 @@ export function buildPrompt(state: BuilderState): string {
     i++;
   });
 
-  charLines.push(
-    `${i}. [REFERENCE PERSON — real individual from uploaded reference photo]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText}\n   • Art style: fully photorealistic, natural cinematic lighting`
-  );
+  // If no couples, add user as standalone (original behavior)
+  if (!hasCouples) {
+    charLines.push(
+      `${i}. [REFERENCE PERSON — real individual from uploaded reference photo]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText}\n   • Art style: fully photorealistic, natural cinematic lighting`
+    );
+  }
 
   // Build setting details — only include non-empty lines
   const settingLines: string[] = [];
@@ -85,12 +164,19 @@ export function buildPrompt(state: BuilderState): string {
   if (foodText) settingLines.push(`On the table: ${foodText}`);
   if (bgPropsText) settingLines.push(`Background: ${bgPropsText}`);
 
+  // Build concept text
+  let conceptText = `CONCEPT\n"The Man Who Can't Be Moved" — a fictional gathering of iconic characters who all share the same emotional experience: being left behind by someone they loved, unable to fully move on. This is a creative fan art crossover scene.`;
+  if (hasCouples) {
+    conceptText += `\n\nBETWEEN / BESIDE COUPLE ELEMENT\nThis scene also features the "Between Couple / Beside Couple" concept — where YOU (the reference person) are placed in the middle of or next to a famous couple who broke up or divorced. The awkwardness, tension, and unresolved emotions between the former couple create a unique emotional dynamic with YOU caught in the crossfire.`;
+  }
+
   const sections = [
     DISCLAIMER,
-    `CONCEPT\n"The Man Who Can't Be Moved" — a fictional gathering of iconic characters who all share the same emotional experience: being left behind by someone they loved, unable to fully move on. This is a creative fan art crossover scene.`,
+    conceptText,
     `SCENE\nLocation: ${loc}\nTime: ${todText}\nAtmosphere: ${weatherText}`,
     settingLines.length > 0 ? `SETTING DETAILS\n${settingLines.join('\n')}` : '',
     `CHARACTERS (strict left-to-right order in frame)\n${charLines.join('\n\n')}`,
+    coupleContextLines.length > 0 ? coupleContextLines.join('\n\n') : '',
     `MOOD / EMOTIONAL ATMOSPHERE\n${vibeText}`,
     `CAMERA\nAngle: ${cameraAngleText}\nComposition: ${compositionText}`,
     `RENDERING STYLE\n${photoStyleText}`,

@@ -1,6 +1,7 @@
 'use client';
 import SceneSection from './builder/SceneSection';
 import CharacterSection from './builder/CharacterSection';
+import CoupleSection from './builder/CoupleSection';
 import VibeSection from './builder/VibeSection';
 import CameraSection from './builder/CameraSection';
 import TutorialButton from './builder/TutorialButton';
@@ -59,6 +60,7 @@ export default function PromptBuilderPage() {
         <div className="w-full md:w-[60%] flex flex-col gap-8 pb-24 lg:pb-8">
           <SceneSection />
           <CharacterSection />
+          <CoupleSection />
           <VibeSection />
           <CameraSection />
           <TutorialButton />

@@ -70,10 +70,13 @@ export function SearchableSelect({ value, onValueChange, options, placeholder, c
     return () => document.removeEventListener('keydown', handleKey);
   }, [open]);
 
-  // Auto-focus search on open
+  // Auto-focus search on open — skip on mobile to avoid keyboard popup
   React.useEffect(() => {
     if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      if (isDesktop) {
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
     }
   }, [open]);
 

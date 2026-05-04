@@ -12,6 +12,7 @@ export const INITIAL_STATE: BuilderState = {
   bgProps: 'motor-indomaret',
   bgCustom: '',
   characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
+  coupleSlots: [],
   userOutfit: 'ref-photo',
   userPose: 'duduk-stare',
   vibe: 'nongkrong',
@@ -63,6 +64,32 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         )
       };
 
+    // ── Couple Slots ──
+    case 'ADD_COUPLE_SLOT':
+      if (state.coupleSlots.length >= 2) return state;
+      return {
+        ...state,
+        coupleSlots: [
+          ...state.coupleSlots,
+          { id: nanoid(), coupleKey: null, userPosition: 'between', couplePose: 'silent-side', advancedMode: false, char1Pose: '', char2Pose: '', artStyle: 'realistic' }
+        ]
+      };
+    case 'REMOVE_COUPLE_SLOT':
+      return { ...state, coupleSlots: state.coupleSlots.filter(s => s.id !== action.id) };
+    case 'UPDATE_COUPLE_SLOT':
+      if (action.value === null) return state;
+      return {
+        ...state,
+        coupleSlots: state.coupleSlots.map(s => {
+          if (s.id !== action.id) return s;
+          // advancedMode is boolean — toggle via truthy string
+          if (action.field === 'advancedMode') {
+            return { ...s, advancedMode: action.value === 'true' };
+          }
+          return { ...s, [action.field]: action.value };
+        })
+      };
+
     case 'SET_USER_FIELD':
       if (action.value === null) return state;
       return { ...state, [action.field]: action.value };
@@ -76,6 +103,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       return {
         ...INITIAL_STATE,
         characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
+        coupleSlots: [],
       };
     default:
       return state;
