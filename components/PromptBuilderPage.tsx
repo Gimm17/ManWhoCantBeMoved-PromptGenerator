@@ -57,7 +57,7 @@ export default function PromptBuilderPage() {
       {/* Main layout */}
       <main className="max-w-[1100px] mx-auto pt-20 pb-8 px-4 md:px-8 flex flex-col md:flex-row gap-6 relative items-start flex-1">
         {/* Builder column */}
-        <div className="w-full md:w-[60%] flex flex-col gap-8 pb-24 lg:pb-8">
+        <div className="w-full md:w-[60%] flex flex-col gap-8 pb-24 lg:pb-8 min-w-0 overflow-hidden">
           <SceneSection />
           <CharacterSection />
           <CoupleSection />
