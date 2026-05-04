@@ -58,7 +58,7 @@ export default function TutorialButton() {
 
             {/* Tip */}
             <div className="mt-3 p-2.5 rounded-lg bg-dusty-rose/8 border border-dusty-rose/15 text-[11px] text-forest/60 leading-relaxed">
-              💡 <strong>Tip:</strong> Pakai foto wajah close-up yang jelas. Gemini 2.0 Flash untuk gambar, Gemini Veo untuk video.
+              💡 <strong>Tip:</strong> Pakai foto wajah close-up yang jelas. Gemini Nano Banana Pro untuk gambar, Gemini Veo untuk video.
             </div>
           </div>
         </div>
