@@ -18,7 +18,6 @@ const COUPLE_POSE_OPTIONS = COUPLE_POSES.map(p => ({ value: p.value, label: p.la
 
 /** Individual character poses — reuse from main poses + add couple-specific ones */
 const CHAR_POSE_OPTIONS = [
-  // Special couple poses at top
   { value: 'cp-diam-buang-muka', label: '💔 Diam — buang muka dari ex', group: '💔 Couple Special' },
   { value: 'cp-lirik-diam', label: '💔 Diam-diam lirik ex', group: '💔 Couple Special' },
   { value: 'cp-pura-pura-sibuk', label: '💔 Pura-pura sibuk (biar ga canggung)', group: '💔 Couple Special' },
@@ -27,7 +26,6 @@ const CHAR_POSE_OPTIONS = [
   { value: 'cp-genggam-tangan-sendiri', label: '💔 Genggam tangan sendiri (dulu genggam dia)', group: '💔 Couple Special' },
   { value: 'cp-pegang-cincin', label: '💔 Pegang/putar cincin di jari', group: '💔 Couple Special' },
   { value: 'cp-hapus-chat', label: '💔 Lagi hapus chat ex di HP', group: '💔 Couple Special' },
-  // All existing poses
   ...POSES.map(p => ({ value: p.value, label: p.label, group: p.group })),
 ];
 
@@ -53,16 +51,14 @@ interface Props {
 
 export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, onUpdate }: Props) {
   const selectedCouple = COUPLES.find(c => c.id === slot.coupleKey);
-
-  // Get char names for labels
   const char1Name = selectedCouple ? selectedCouple.char1PromptName.split('(')[0].trim() : 'Karakter 1';
   const char2Name = selectedCouple ? selectedCouple.char2PromptName.split('(')[0].trim() : 'Karakter 2';
 
   return (
-    <div className="bg-page rounded-lg border border-dusty-rose/30 p-4 flex flex-col gap-2 overflow-hidden min-w-0">
+    <div className="bg-page rounded-lg border border-surface-variant p-4 flex flex-col gap-2">
       {/* Header */}
       <div className="flex justify-between items-center w-full">
-        <span className="bg-dusty-rose/15 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.05em] text-dusty-rose">
+        <span className="bg-light-sage rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.05em] text-dusty-rose">
           💔 Couple {slotNumber}
         </span>
         {canRemove && (
@@ -72,8 +68,8 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
         )}
       </div>
 
-      {/* Stacked controls */}
-      <div className="flex flex-col gap-2 mt-1 min-w-0">
+      {/* Stacked dropdowns — same structure as CharacterSlotCard */}
+      <div className="flex flex-col gap-2 mt-1">
         {/* Couple pair select — searchable */}
         <SearchableSelect
           value={slot.coupleKey || ''}
@@ -84,77 +80,50 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
 
         {/* Breakup info badge */}
         {selectedCouple && (
-          <div className="bg-dusty-rose/8 border border-dusty-rose/20 rounded-md px-3 py-2 text-xs text-forest/70 leading-relaxed break-words overflow-hidden">
+          <p className="text-[11px] text-forest/50 leading-relaxed">
             <span className="font-semibold text-dusty-rose">{selectedCouple.source}</span>
-            <span className="text-forest/40 mx-1.5">—</span>
+            {' — '}
             <span className="italic">{selectedCouple.breakupReason}</span>
-          </div>
+          </p>
         )}
 
-        {/* User position toggle: Between vs Beside */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[11px] font-medium text-forest-muted uppercase tracking-wide">Posisi kamu</label>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              onClick={() => onUpdate('userPosition', 'between')}
-              className={`py-2 px-3 rounded-md text-xs font-medium transition-all duration-200 cursor-pointer border ${
-                slot.userPosition === 'between'
-                  ? 'bg-dusty-rose text-white border-dusty-rose shadow-[0_2px_8px_rgba(220,155,155,0.3)]'
-                  : 'bg-page text-forest-muted border-surface-variant hover:bg-light-sage'
-              }`}
-            >
-              <span className="block text-sm mb-0.5">🧍‍♂️👤🧍‍♀️</span>
-              Between
-            </button>
-            <button
-              onClick={() => onUpdate('userPosition', 'beside')}
-              className={`py-2 px-3 rounded-md text-xs font-medium transition-all duration-200 cursor-pointer border ${
-                slot.userPosition === 'beside'
-                  ? 'bg-dusty-rose text-white border-dusty-rose shadow-[0_2px_8px_rgba(220,155,155,0.3)]'
-                  : 'bg-page text-forest-muted border-surface-variant hover:bg-light-sage'
-              }`}
-            >
-              <span className="block text-sm mb-0.5">🧍‍♂️🧍‍♀️ 👤</span>
-              Beside
-            </button>
-          </div>
-        </div>
+        {/* User position — simple select instead of toggle buttons */}
+        <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
+          <SelectTrigger><SelectValue options={[
+            { value: 'between', label: 'Between — kamu di tengah couple' },
+            { value: 'beside', label: 'Beside — kamu di samping couple' },
+          ]} /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="between">Between — kamu di tengah couple</SelectItem>
+            <SelectItem value="beside">Beside — kamu di samping couple</SelectItem>
+          </SelectContent>
+        </Select>
 
-        {/* Couple dynamic/pose — simple mode */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label className="text-[11px] font-medium text-forest-muted uppercase tracking-wide">Couple dynamic</label>
-            <button
-              onClick={() => onUpdate('advancedMode', slot.advancedMode ? '' : 'true')}
-              className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
-                slot.advancedMode
-                  ? 'bg-dusty-rose/15 text-dusty-rose'
-                  : 'bg-forest/5 text-forest/40 hover:text-forest/60'
-              }`}
-            >
-              {slot.advancedMode ? '✦ Advanced ON' : '⚙ Advanced'}
-            </button>
-          </div>
-          <SearchableSelect
-            value={slot.couplePose}
-            onValueChange={v => onUpdate('couplePose', v)}
-            options={COUPLE_POSE_OPTIONS}
-            placeholder="Pilih couple dynamic..."
-          />
-        </div>
+        {/* Couple dynamic — searchable */}
+        <SearchableSelect
+          value={slot.couplePose}
+          onValueChange={v => onUpdate('couplePose', v)}
+          options={COUPLE_POSE_OPTIONS}
+          placeholder="Pilih couple dynamic..."
+        />
 
-        {/* Advanced mode — individual poses per character */}
+        {/* Advanced toggle */}
+        <button
+          onClick={() => onUpdate('advancedMode', slot.advancedMode ? '' : 'true')}
+          className={`w-full py-1.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer border ${
+            slot.advancedMode
+              ? 'bg-dusty-rose/10 text-dusty-rose border-dusty-rose/30'
+              : 'bg-page text-forest/40 border-surface-variant hover:bg-light-sage'
+          }`}
+        >
+          {slot.advancedMode ? '✦ Advanced Mode ON — atur pose per karakter' : '⚙ Advanced — atur pose masing-masing'}
+        </button>
+
+        {/* Advanced mode — individual poses */}
         {slot.advancedMode && (
-          <div className="flex flex-col gap-2 pl-2 border-l-2 border-dusty-rose/20">
-            <p className="text-[10px] text-forest/40 italic">
-              Mode advanced — atur pose masing-masing karakter
-            </p>
-
-            {/* Char 1 pose */}
+          <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-medium text-dusty-rose/80 truncate" title={char1Name}>
-                🧑 {char1Name}
-              </label>
+              <label className="text-[11px] font-medium text-sage-secondary truncate">🧑 {char1Name}</label>
               <SearchableSelect
                 value={slot.char1Pose}
                 onValueChange={v => onUpdate('char1Pose', v)}
@@ -162,12 +131,8 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
                 placeholder="Pose karakter 1..."
               />
             </div>
-
-            {/* Char 2 pose */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-medium text-dusty-rose/80 truncate" title={char2Name}>
-                👩 {char2Name}
-              </label>
+              <label className="text-[11px] font-medium text-sage-secondary truncate">👩 {char2Name}</label>
               <SearchableSelect
                 value={slot.char2Pose}
                 onValueChange={v => onUpdate('char2Pose', v)}
