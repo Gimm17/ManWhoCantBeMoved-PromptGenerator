@@ -37,6 +37,8 @@ export default function TutorialButton() {
             <ol className="text-xs text-forest/80 leading-relaxed space-y-1.5 list-none">
               <li>🏙️ Pilih <strong>Scene</strong> & atur detail lokasi</li>
               <li>🧑‍🤝‍🧑 Tambah <strong>Karakter</strong> & atur pose masing-masing</li>
+              <li>💔 Tambah <strong>Couple</strong> — duduk di antara/samping mantan</li>
+              <li>🎤 Tambah <strong>Artist/Band</strong> — pilih artis solo atau grup</li>
               <li>🎨 Set <strong>Vibe</strong>, sudut kamera, & style foto</li>
               <li>📋 Klik <strong>Copy Prompt</strong></li>
               <li>🤖 Paste ke <strong>Gemini / Midjourney / Flux</strong></li>
@@ -56,8 +58,13 @@ export default function TutorialButton() {
               </ol>
             </div>
 
+            {/* Artist photo tip */}
+            <div className="mt-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200/40 text-[11px] text-forest/60 leading-relaxed">
+              🎤 <strong>Tips Artist/Band:</strong> Kalau pakai fitur Artist/Band, upload juga <strong>foto artis</strong>-nya ke Gemini bareng foto kamu. Ini penting supaya AI tidak <em>halu</em> — wajah artis akan jauh lebih akurat kalau ada referensi asli.
+            </div>
+
             {/* Tip */}
-            <div className="mt-3 p-2.5 rounded-lg bg-dusty-rose/8 border border-dusty-rose/15 text-[11px] text-forest/60 leading-relaxed">
+            <div className="mt-2 p-2.5 rounded-lg bg-dusty-rose/8 border border-dusty-rose/15 text-[11px] text-forest/60 leading-relaxed">
               💡 <strong>Tip:</strong> Pakai foto wajah close-up yang jelas. Gemini Nano Banana Pro untuk gambar, Gemini Veo untuk video.
             </div>
           </div>
