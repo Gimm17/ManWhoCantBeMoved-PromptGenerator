@@ -14,6 +14,7 @@ export const INITIAL_STATE: BuilderState = {
   characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
   coupleSlots: [],
   globalUserPosition: '',
+  artistSlots: [],
   userOutfit: 'ref-photo',
   userPose: 'duduk-stare',
   vibe: 'nongkrong',
@@ -107,12 +108,35 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         : state.coupleSlots;
       return { ...state, globalUserPosition: action.value, coupleSlots: newCouples };
     }
+
+    // ── Artist Slots ──
+    case 'ADD_ARTIST_SLOT':
+      if (state.artistSlots.length >= 3) return state;
+      return {
+        ...state,
+        artistSlots: [
+          ...state.artistSlots,
+          { id: nanoid(), artistKey: null, pose: '', artStyle: 'realistic', displayMode: 'full-band', selectedMembers: [], userPosition: '' }
+        ]
+      };
+    case 'REMOVE_ARTIST_SLOT':
+      return { ...state, artistSlots: state.artistSlots.filter(s => s.id !== action.id) };
+    case 'UPDATE_ARTIST_SLOT':
+      if (action.value === null) return state;
+      return {
+        ...state,
+        artistSlots: state.artistSlots.map(s =>
+          s.id === action.id ? { ...s, [action.field]: action.value } : s
+        )
+      };
+
     case 'RESET_ALL':
       return {
         ...INITIAL_STATE,
         characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
         coupleSlots: [],
         globalUserPosition: '',
+        artistSlots: [],
       };
     default:
       return state;

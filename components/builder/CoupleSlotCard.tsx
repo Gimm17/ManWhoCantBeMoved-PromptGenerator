@@ -4,6 +4,8 @@ import { COUPLE_POSES } from '@/data/couplePoses';
 import { POSES } from '@/data/poses';
 import { ART_STYLES } from '@/data/styles';
 import { CoupleSlot } from '@/lib/types';
+import { useBuilder } from '@/context/BuilderContext';
+import { isPosePositionCompatible, getPosePosture, getPostureLabel } from '@/lib/poseCompat';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -51,9 +53,12 @@ interface Props {
 }
 
 export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPositionActive, onRemove, onUpdate }: Props) {
+  const { state } = useBuilder();
   const selectedCouple = COUPLES.find(c => c.id === slot.coupleKey);
   const char1Name = selectedCouple ? selectedCouple.char1PromptName.split('(')[0].trim() : 'Karakter 1';
   const char2Name = selectedCouple ? selectedCouple.char2PromptName.split('(')[0].trim() : 'Karakter 2';
+  const userPosePosture = getPosePosture(state.userPose);
+  const userPostureLabel = getPostureLabel(userPosePosture);
 
   return (
     <div className="bg-page rounded-lg border border-surface-variant p-3 flex flex-col gap-2">
@@ -88,7 +93,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPosi
           </p>
         )}
 
-        {/* User position — hidden when global position overrides */}
+        {/* User position — hidden when global position overrides, with compatibility warnings */}
         {!globalPositionActive && (
           <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
             <SelectTrigger><SelectValue options={[
@@ -96,8 +101,15 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPosi
               { value: 'beside', label: 'Beside — kamu di samping couple' },
             ]} placeholder="— Posisi diatur global —" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="between">Between — kamu di tengah couple</SelectItem>
-              <SelectItem value="beside">Beside — kamu di samping couple</SelectItem>
+              {[{ value: 'between', label: 'Between — kamu di tengah couple' }, { value: 'beside', label: 'Beside — kamu di samping couple' }].map(o => {
+                const compatible = isPosePositionCompatible(state.userPose, o.value);
+                return (
+                  <SelectItem key={o.value} value={o.value}>
+                    <span className={compatible ? '' : 'line-through text-red-400/60 opacity-50'}>{o.label}</span>
+                    {!compatible && <span className="text-[9px] text-red-400 ml-1">⚠️ pose {userPostureLabel}</span>}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         )}

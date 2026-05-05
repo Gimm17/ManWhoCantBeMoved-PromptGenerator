@@ -2,6 +2,7 @@
 import SceneSection from './builder/SceneSection';
 import CharacterSection from './builder/CharacterSection';
 import CoupleSection from './builder/CoupleSection';
+import ArtistSection from './builder/ArtistSection';
 import VibeSection from './builder/VibeSection';
 import CameraSection from './builder/CameraSection';
 import VideoPromptSection from './builder/VideoPromptSection';
@@ -62,6 +63,7 @@ export default function PromptBuilderPage() {
           <SceneSection />
           <CharacterSection />
           <CoupleSection />
+          <ArtistSection />
           <VibeSection />
           <CameraSection />
           <VideoPromptSection />

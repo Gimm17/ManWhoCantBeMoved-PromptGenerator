@@ -1,5 +1,6 @@
 import { CHARACTERS } from '@/data/characters';
 import { COUPLES } from '@/data/couples';
+import { ARTISTS } from '@/data/artists';
 import { SCENE_PRESETS } from '@/data/scenes';
 import { POSES } from '@/data/poses';
 import { CAMERA_MOVEMENTS, CAMERA_FOCUS, TRANSITIONS, SCENE_MOODS, SCENE_ACTIONS } from '@/data/videoScenes';
@@ -36,6 +37,22 @@ function buildCharacterSummary(state: BuilderState): string {
     const char = CHARACTERS.find(c => c.id === slot.characterKey);
     if (!char) return;
     lines.push(`• ${char.promptName.split('(')[0].trim()}`);
+  });
+
+  // Artist/band characters
+  state.artistSlots.forEach(slot => {
+    if (!slot.artistKey) return;
+    const artist = ARTISTS.find(a => a.id === slot.artistKey);
+    if (!artist) return;
+    if (artist.type === 'solo') {
+      lines.push(`• ${artist.label} (musician)`);
+    } else {
+      const members = artist.members ?? [];
+      let displayMembers = members;
+      if (slot.displayMode === 'vocalist-only') displayMembers = members.filter(m => m.role === 'vocalist');
+      else if (slot.displayMode === 'custom' && slot.selectedMembers.length > 0) displayMembers = members.filter(m => slot.selectedMembers.includes(m.id));
+      lines.push(`• ${artist.label}: ${displayMembers.map(m => m.name).join(', ')}`);
+    }
   });
 
   // User

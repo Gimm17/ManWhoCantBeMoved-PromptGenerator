@@ -1,6 +1,7 @@
 'use client';
 import { useBuilder } from '@/context/BuilderContext';
 import CoupleSlotCard from './CoupleSlotCard';
+import { isPosePositionCompatible, getPosePosture, getPostureLabel } from '@/lib/poseCompat';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 /** Global user position options — visible only when 2 couples are active */
@@ -21,6 +22,8 @@ export default function CoupleSection() {
   const { state, dispatch } = useBuilder();
   const canAdd = state.coupleSlots.length < 2;
   const hasTwoCouples = state.coupleSlots.length === 2;
+  const userPosePosture = getPosePosture(state.userPose);
+  const userPostureLabel = getPostureLabel(userPosePosture);
 
   return (
     <section className="stitch-card flex flex-col gap-4">
@@ -43,7 +46,15 @@ export default function CoupleSection() {
           >
             <SelectTrigger><SelectValue options={GLOBAL_USER_POSITIONS} placeholder="— Tidak ada (atur per couple) —" /></SelectTrigger>
             <SelectContent>
-              {GLOBAL_USER_POSITIONS.map(o => <SelectItem key={o.value || '_none'} value={o.value}>{o.label}</SelectItem>)}
+              {GLOBAL_USER_POSITIONS.map(o => {
+                const compatible = !o.value || isPosePositionCompatible(state.userPose, o.value);
+                return (
+                  <SelectItem key={o.value || '_none'} value={o.value}>
+                    <span className={compatible ? '' : 'line-through text-red-400/60 opacity-50'}>{o.label}</span>
+                    {!compatible && <span className="text-[9px] text-red-400 ml-1">⚠️ pose {userPostureLabel}</span>}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>

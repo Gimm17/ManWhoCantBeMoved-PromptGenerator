@@ -1,6 +1,7 @@
 import { CHARACTERS } from '@/data/characters';
 import { COUPLES } from '@/data/couples';
 import { COUPLE_POSES } from '@/data/couplePoses';
+import { ARTISTS, BAND_USER_POSITIONS } from '@/data/artists';
 import { SCENE_PRESETS } from '@/data/scenes';
 import { FOOD_OPTIONS } from '@/data/food';
 import { POSES } from '@/data/poses';
@@ -10,6 +11,7 @@ import { TOD_OPTIONS, WEATHER_OPTIONS, FURNITURE_OPTIONS, BG_OPTIONS } from '@/c
 import { OUTFIT_OPTIONS } from '@/components/builder/UserSlotCard';
 import { VIBES } from '@/components/builder/VibeSection';
 import { GLOBAL_USER_POSITIONS } from '@/components/builder/CoupleSection';
+import { isPosePositionCompatible, getPosePosture } from './poseCompat';
 import { BuilderState } from './types';
 
 /** Generic lookup: find prompt text by ID from any option array */
@@ -209,6 +211,73 @@ export function buildPrompt(state: BuilderState): string {
     );
   }
 
+  // ── Build artist/band entries ──
+  const activeArtists = state.artistSlots.filter(s => s.artistKey);
+  const hasArtists = activeArtists.length > 0;
+  const artistContextLines: string[] = [];
+
+  activeArtists.forEach(slot => {
+    const artist = ARTISTS.find(a => a.id === slot.artistKey);
+    if (!artist) return;
+    const poseText = lookup(POSES, slot.pose);
+    const artText = lookup(ART_STYLES, slot.artStyle);
+
+    if (artist.type === 'solo') {
+      // Solo artist — add like a regular character
+      charLines.push(
+        `${i}. ${artist.promptName}\n   • Pose: ${poseText}\n   • Art style: ${artText}`
+      );
+      i++;
+      artistContextLines.push(
+        `ARTIST — ${artist.label}\nReal-world musician hanging out in the scene, casually present as part of the nongkrong gathering.`
+      );
+    } else {
+      // Band — add members based on displayMode
+      const members = artist.members ?? [];
+      let displayMembers = members;
+      if (slot.displayMode === 'vocalist-only') {
+        displayMembers = members.filter(m => m.role === 'vocalist');
+      } else if (slot.displayMode === 'custom' && slot.selectedMembers.length > 0) {
+        displayMembers = members.filter(m => slot.selectedMembers.includes(m.id));
+      }
+
+      displayMembers.forEach(m => {
+        charLines.push(
+          `${i}. ${m.promptName}\n   • Pose: ${poseText}\n   • Art style: ${artText}`
+        );
+        i++;
+      });
+
+      // Band user position
+      if (slot.userPosition) {
+        const posOption = BAND_USER_POSITIONS.find(p => p.value === slot.userPosition);
+        const compatible = isPosePositionCompatible(state.userPose, slot.userPosition);
+        let posText = posOption?.prompt ?? slot.userPosition;
+
+        // Auto-adjust if pose conflicts with position
+        if (!compatible) {
+          const posePosture = getPosePosture(state.userPose);
+          if (posePosture === 'sitting') {
+            posText = posText.replace(/STANDING|standing|LEANING|leaning/g, 'sitting nearby');
+          } else if (posePosture === 'standing') {
+            posText = posText.replace(/sitting/gi, 'standing near');
+          }
+        }
+
+        artistContextLines.push(
+          `BAND — ${artist.label}\nMembers present: ${displayMembers.map(m => m.name).join(', ')}\n` +
+          `Display: ${slot.displayMode}\n` +
+          `User position: ${posText}`
+        );
+      } else {
+        artistContextLines.push(
+          `BAND — ${artist.label}\nMembers present: ${displayMembers.map(m => m.name).join(', ')}\n` +
+          `Real-world musicians casually hanging out in the nongkrong scene.`
+        );
+      }
+    }
+  });
+
   // Build setting details — only include non-empty lines
   const settingLines: string[] = [];
   if (furnitureText) settingLines.push(`Furniture / seating: ${furnitureText}`);
@@ -220,6 +289,9 @@ export function buildPrompt(state: BuilderState): string {
   if (hasCouples) {
     conceptText += `\n\nBETWEEN / BESIDE COUPLE ELEMENT\nThis scene also features the "Between Couple / Beside Couple" concept — where YOU (the reference person) are placed in the middle of or next to a famous couple who broke up or divorced. The awkwardness, tension, and unresolved emotions between the former couple create a unique emotional dynamic with YOU caught in the crossfire.`;
   }
+  if (hasArtists) {
+    conceptText += `\n\nARTIST / BAND ELEMENT\nReal-world musicians are also present at this nongkrong gathering — hanging out casually in the same location, sharing the same late-night vibe. They are NOT performing; they are just chilling as part of the group.`;
+  }
 
   const sections = [
     DISCLAIMER,
@@ -228,6 +300,7 @@ export function buildPrompt(state: BuilderState): string {
     settingLines.length > 0 ? `SETTING DETAILS\n${settingLines.join('\n')}` : '',
     `CHARACTERS (strict left-to-right order in frame)\n${charLines.join('\n\n')}`,
     coupleContextLines.length > 0 ? coupleContextLines.join('\n\n') : '',
+    artistContextLines.length > 0 ? artistContextLines.join('\n\n') : '',
     `MOOD / EMOTIONAL ATMOSPHERE\n${vibeText}`,
     `CAMERA\nAngle: ${cameraAngleText}\nComposition: ${compositionText}`,
     `RENDERING STYLE\n${photoStyleText}`,

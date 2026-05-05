@@ -27,6 +27,16 @@ export interface VideoScene {
   durationSeconds: number;
 }
 
+export interface ArtistSlot {
+  id: string;
+  artistKey: string | null;
+  pose: string;
+  artStyle: string;
+  displayMode: 'full-band' | 'vocalist-only' | 'custom';
+  selectedMembers: string[];
+  userPosition: string;
+}
+
 export interface BuilderState {
   scenePresetId: string;
   sceneCustomDetail: string;
@@ -39,6 +49,7 @@ export interface BuilderState {
   characterSlots: CharacterSlot[];
   coupleSlots: CoupleSlot[];
   globalUserPosition: string;
+  artistSlots: ArtistSlot[];
 
   userOutfit: string;
   userPose: string;
@@ -61,4 +72,7 @@ export type BuilderAction =
   | { type: 'SET_VIBE'; value: string | null }
   | { type: 'SET_CAMERA_FIELD'; field: 'cameraAngle' | 'photoStyle' | 'composition'; value: string | null }
   | { type: 'SET_GLOBAL_USER_POSITION'; value: string }
+  | { type: 'ADD_ARTIST_SLOT' }
+  | { type: 'REMOVE_ARTIST_SLOT'; id: string }
+  | { type: 'UPDATE_ARTIST_SLOT'; id: string; field: keyof ArtistSlot; value: string | string[] | null }
   | { type: 'RESET_ALL' };
