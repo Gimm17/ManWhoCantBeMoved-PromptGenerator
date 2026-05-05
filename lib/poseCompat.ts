@@ -14,6 +14,7 @@ const SITTING_PREFIXES = [
   'baca-', 'nulis-', 'lipat-', 'pegang-kacamata',
   'menunduk-', 'ketawa-', 'senyum-', 'berfikir-', 'ngobrol-',
   'hela-', 'garuk-', 'tepuk-', 'nunjuk-', 'kepala-rebah',
+  'ngeliatin-', 'nyimak-', 'curhat-', 'pandang-', 'simak-',
 ];
 
 const STANDING_VALUES = [
