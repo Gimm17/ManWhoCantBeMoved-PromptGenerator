@@ -23,6 +23,7 @@ function createDefaultScene(): VideoScene {
 export default function VideoPromptSection() {
   const { state } = useBuilder();
   const [expanded, setExpanded] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [scenes, setScenes] = useState<VideoScene[]>([createDefaultScene()]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
@@ -61,18 +62,74 @@ export default function VideoPromptSection() {
 
   if (!expanded) {
     return (
-      <section className="stitch-card flex flex-col gap-2">
-        <button
-          onClick={() => setExpanded(true)}
-          className="w-full py-3.5 rounded-lg text-sm font-medium bg-rose-dark text-white hover:opacity-90 transition-all duration-200 flex justify-center items-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(133,80,80,0.3)]"
-        >
-          <span className="material-symbols-outlined text-base">movie</span>
-          🎬 Generate Video Prompt
-        </button>
-        <p className="text-[11px] text-center text-forest/40">
-          Generate prompt video dari scene gambar yang sedang kamu buat
-        </p>
-      </section>
+      <>
+        <section className="stitch-card flex flex-col gap-2">
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="w-full py-3.5 rounded-lg text-sm font-medium bg-rose-dark text-white hover:opacity-90 transition-all duration-200 flex justify-center items-center gap-2 cursor-pointer shadow-[0_2px_12px_rgba(133,80,80,0.3)]"
+          >
+            <span className="material-symbols-outlined text-base">movie</span>
+            🎬 Generate Video Prompt
+          </button>
+          <p className="text-[11px] text-center text-forest/40">
+            Generate prompt video dari scene gambar yang sedang kamu buat
+          </p>
+        </section>
+
+        {/* Confirmation modal */}
+        {showConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setShowConfirm(false)}>
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+            <div
+              className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full p-5 animate-in fade-in zoom-in-95 duration-200"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button onClick={() => setShowConfirm(false)} className="absolute top-3 right-3 text-sage-secondary hover:text-forest transition-colors cursor-pointer">
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+
+              {/* Icon */}
+              <div className="text-center mb-3">
+                <span className="text-3xl">🎬</span>
+              </div>
+
+              {/* Title */}
+              <h3 className="text-sm font-bold text-forest text-center mb-2">Ini untuk Video Prompt</h3>
+
+              {/* Explanation */}
+              <div className="text-xs text-forest/70 leading-relaxed space-y-2">
+                <p>
+                  Kalau kamu mau <strong>generate gambar (image)</strong>, tombol <strong>📋 Copy Prompt</strong> ada di <strong>pojok kanan bawah layar</strong>.
+                </p>
+                <div className="flex items-center gap-2 bg-sage-mint/20 border border-sage-mint/30 rounded-lg px-3 py-2">
+                  <span className="material-symbols-outlined text-forest/50 text-base">arrow_downward</span>
+                  <span className="text-[11px] text-forest/60">Lihat tombol <strong>&quot;📋 Copy Prompt&quot;</strong> di kanan bawah layar</span>
+                </div>
+                <p>
+                  Tombol ini adalah untuk membuat <strong>prompt video</strong> — animasikan gambar yang sudah kamu generate menjadi video ~7 detik.
+                </p>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="flex-1 py-2.5 rounded-lg text-xs font-medium bg-forest/5 text-forest/70 border border-forest/10 hover:bg-forest/10 transition-all cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={() => { setShowConfirm(false); setExpanded(true); }}
+                  className="flex-1 py-2.5 rounded-lg text-xs font-medium bg-rose-dark text-white hover:opacity-90 transition-all cursor-pointer"
+                >
+                  🎬 Lanjut ke Video
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
