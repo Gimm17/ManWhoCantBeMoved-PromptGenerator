@@ -94,13 +94,13 @@ export function SearchableSelect({ value, onValueChange, options, placeholder, c
         type="button"
         onClick={() => setOpen(prev => !prev)}
         className={cn(
-          'flex w-full items-center justify-between rounded-md border border-input-border bg-white px-3 py-2 text-sm',
+          'flex w-full items-start justify-between rounded-md border border-input-border bg-white px-3 py-2 text-sm',
           'hover:bg-light-sage transition-colors duration-150 cursor-pointer',
           'focus:outline-none focus:ring-2 focus:ring-sage-mint/50 focus:border-sage-mint',
           'min-h-[36px]'
         )}
       >
-        <span className="truncate text-left flex-1 min-w-0">
+        <span className="whitespace-normal break-words text-left flex-1 min-w-0">
           {selectedLabel || <span className="text-sage-secondary/60">{placeholder}</span>}
         </span>
         <ChevronDownIcon className={cn('h-4 w-4 shrink-0 text-sage-secondary ml-2 transition-transform duration-200', open && 'rotate-180')} />
