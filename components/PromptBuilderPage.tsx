@@ -11,6 +11,7 @@ import PromptOutput from './output/PromptOutput';
 import MobilePromptBar from './output/MobilePromptBar';
 import { useBuilder } from '@/context/BuilderContext';
 import { useViewCounter } from '@/hooks/useViewCounter';
+import WelcomePopup from './WelcomePopup';
 
 export default function PromptBuilderPage() {
   const { dispatch } = useBuilder();
@@ -18,6 +19,7 @@ export default function PromptBuilderPage() {
 
   return (
     <div className="min-h-screen bg-page flex flex-col">
+      <WelcomePopup />
       {/* Minimal header */}
       <header className="fixed top-0 w-full z-50 bg-sage-mint border-b border-sage-mint/50 shadow-[0_2px_8px_rgba(45,59,47,0.04)] backdrop-blur-sm">
         <div className="max-w-[1100px] mx-auto flex justify-between items-center px-4 md:px-8 h-12 md:h-14">
