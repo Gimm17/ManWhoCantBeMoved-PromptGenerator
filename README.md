@@ -4,9 +4,9 @@
 
 ### Prompt Generator Studio
 
-**Generate high-quality AI image prompts for "The Man Who Can't Be Moved" crossover fan art.**
+**Generate high-quality AI image & video prompts for "The Man Who Can't Be Moved" crossover fan art.**
 
-Configure characters, scenes, poses, and vibes — then copy the prompt to Gemini, Midjourney, or Flux.
+Configure characters, couples, artists/bands, scenes, poses, and vibes — then copy the prompt to Gemini, Midjourney, or Flux.
 
 [![Live Demo](https://img.shields.io/badge/▶_Live_Demo-Visit_Site-E88D8D?style=for-the-badge&logo=vercel&logoColor=white)](https://man-who-cant-be-moved-prompt-genera.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -52,19 +52,39 @@ This tool helps you **build detailed, high-quality prompts** to generate these i
 <tr>
 <td width="50%">
 
-### 🎭 68 Poses
-- Categorized: sitting, eating, smoking, phone, reading, standing
-- Each pose has **detailed prompt engineering** for accurate AI rendering
-- Searchable dropdown with grouped categories
+### 💔 Couple System
+- **Between / Beside** positioning — sit between or next to ex-couples
+- Up to **2 couple slots** with individual or advanced pose control
+- **Global User Position** — when 2 couples are active, set your position globally (center, side, behind, etc.)
 
 </td>
 <td width="50%">
 
-### 🔍 Smart Dropdowns
-- **SearchableSelect** components with instant text filtering
-- **Grouped items** with sticky headers
-- 420px scrollable panels for large option sets
-- Keyboard accessible (Escape to close)
+### 🎤 Artist / Group Band
+- **130 artists** across 5 regions: 🇺🇸 Western, 🇮🇩 Indonesia, 🇰🇷 Korean, 🇯🇵 Japan, 🇵🇭 Filipino
+- **Solo & Band** support — bands have display mode (full/vocalist/custom members)
+- **Band user position** — sit beside vocalist, across table, edge of group
+- Searchable dropdown grouped by region
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🎬 Video Prompt Engine
+- **Multi-scene** video prompts (up to 5 scenes, 7s each)
+- **30 character actions**, 16 camera focus, 19 camera movements
+- Scene-by-scene timeline with beat breakdown
+- Transition presets between scenes
+
+</td>
+<td width="50%">
+
+### ⚠️ Pose ↔ Position Compatibility
+- Smart system that **warns when pose conflicts with position**
+- Covers ALL sections: Character, Couple, Global Position, Band
+- Incompatible options shown with ~~strikethrough~~ + warning
+- Prompt builder **auto-adjusts** conflicting text for natural output
 
 </td>
 </tr>
@@ -79,6 +99,8 @@ This tool helps you **build detailed, high-quality prompts** to generate these i
 | 👁 **View Counter** | Live visitor count powered by Upstash Redis |
 | 🔄 **New Prompt Reset** | Reset all fields to defaults with confirmation |
 | 🎨 **Stitch-inspired Design** | Soft sage-green aesthetic with glassmorphism cards |
+| 📖 **Built-in Tutorial** | Step-by-step guide with video animation workflow |
+| 🎭 **68 Poses** | Categorized: duduk, makan, rokok, HP, baca, ekspresi, berdiri |
 
 ---
 
@@ -138,13 +160,13 @@ KV_REST_API_TOKEN=your_upstash_redis_token
 │   ├── layout.tsx          # Root layout + metadata
 │   └── page.tsx            # Home page
 ├── components/
-│   ├── builder/            # Scene, Character, Vibe, Camera sections
+│   ├── builder/            # Scene, Character, Couple, Artist, Vibe, Camera, Video sections
 │   ├── output/             # Prompt output + mobile bottom bar
-│   └── ui/                 # Reusable UI components (SearchableSelect, etc.)
+│   └── ui/                 # Reusable UI (SearchableSelect, Select, etc.)
 ├── context/                # React context for builder state
-├── data/                   # Characters, poses, food, scenes, styles
+├── data/                   # Characters, artists, couples, poses, food, scenes, styles, videoScenes
 ├── hooks/                  # Custom hooks (useViewCounter)
-└── lib/                    # Reducer, types, prompt builder logic
+└── lib/                    # Reducer, types, buildPrompt, buildVideoPrompt, poseCompat
 ```
 
 ---
@@ -154,19 +176,25 @@ KV_REST_API_TOKEN=your_upstash_redis_token
 ```mermaid
 graph LR
     A[Pick Scene] --> B[Add Characters]
-    B --> C[Choose Poses]
-    C --> D[Set Vibe & Camera]
-    D --> E[Generated Prompt]
-    E --> F[Copy to AI Tool]
-    F --> G[🖼️ AI Image]
+    B --> C[Add Couples]
+    C --> D[Add Artists/Bands]
+    D --> E[Choose Poses]
+    E --> F[Set Vibe & Camera]
+    F --> G[📸 Image Prompt]
+    G --> H[Copy to AI Tool]
+    H --> I[🖼️ AI Image]
+    G --> J[🎬 Video Prompt]
+    J --> K[Animate with Veo]
 ```
 
 1. **Select a scene preset** (or go full custom)
 2. **Add characters** from anime/drama/film roster
-3. **Pick poses** for each character (68 options!)
-4. **Set the mood** — vibe, camera angle, photo style
-5. **Copy the prompt** → paste into Gemini / Midjourney / Flux
-6. **Generate your image** 🎨
+3. **Add couples** — sit between or beside them
+4. **Add artists/bands** — 130 artists from 5 regions
+5. **Pick poses** for each character (68 options!)
+6. **Set the mood** — vibe, camera angle, photo style
+7. **Copy the image prompt** → paste into Gemini / Midjourney / Flux
+8. **Generate video prompt** → animate with Gemini Veo 🎬
 
 ---
 
@@ -175,9 +203,12 @@ graph LR
 Contributions are welcome! Feel free to:
 
 - Add new **characters** in `data/characters.ts`
+- Add new **artists/bands** in `data/artists.ts`
+- Add new **couples** in `data/couples.ts`
 - Add new **poses** in `data/poses.ts`
 - Add new **scene presets** in `data/scenes.ts`
 - Add new **food/drink options** in `data/food.ts`
+- Add new **video scene presets** in `data/videoScenes.ts`
 
 ---
 
