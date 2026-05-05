@@ -53,7 +53,7 @@ export default function WelcomePopup() {
           onClick={handleClose}
           className="mt-3 w-full py-2 rounded-lg text-[11px] font-semibold text-dusty-rose bg-dusty-rose/8 border border-dusty-rose/15 hover:bg-dusty-rose/15 transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          Follow @gimoradigital.id ✦ Request di sana
+          Follow @gimoradigital.id Untuk Request
         </a>
       </div>
     </div>
