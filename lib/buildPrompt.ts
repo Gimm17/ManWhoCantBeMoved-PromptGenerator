@@ -9,6 +9,7 @@ import { ART_STYLES, PHOTO_STYLES, CAMERA_ANGLES, COMPOSITIONS } from '@/data/st
 import { TOD_OPTIONS, WEATHER_OPTIONS, FURNITURE_OPTIONS, BG_OPTIONS } from '@/components/builder/SceneSection';
 import { OUTFIT_OPTIONS } from '@/components/builder/UserSlotCard';
 import { VIBES } from '@/components/builder/VibeSection';
+import { GLOBAL_USER_POSITIONS } from '@/components/builder/CoupleSection';
 import { BuilderState } from './types';
 
 /** Generic lookup: find prompt text by ID from any option array */
@@ -72,48 +73,30 @@ export function buildPrompt(state: BuilderState): string {
   // ── Build couple character entries ──
   const coupleContextLines: string[] = [];
 
-  activeCouples.forEach(slot => {
-    const couple = COUPLES.find(c => c.id === slot.coupleKey);
-    if (!couple) return;
-    if (couple.char1IsFilmLiveAction || couple.char2IsFilmLiveAction) hasFilmChar = true;
-    const couplePoseText = COUPLE_POSES.find(p => p.value === slot.couplePose)?.prompt ?? slot.couplePose;
-    const artText = lookup(ART_STYLES, slot.artStyle);
+  // Determine if global user position is active
+  const useGlobalPosition = activeCouples.length === 2 && !!state.globalUserPosition;
 
-    // Resolve individual poses (advanced mode)
-    const resolveCharPose = (poseId: string): string => {
-      if (!poseId) return '';
-      if (COUPLE_CHAR_POSES[poseId]) return COUPLE_CHAR_POSES[poseId];
-      return lookup(POSES, poseId);
-    };
-    const c1PoseText = slot.advancedMode && slot.char1Pose ? resolveCharPose(slot.char1Pose) : '';
-    const c2PoseText = slot.advancedMode && slot.char2Pose ? resolveCharPose(slot.char2Pose) : '';
+  if (useGlobalPosition) {
+    // ── Global position mode: list all couple chars, then user once ──
+    const globalPosText = GLOBAL_USER_POSITIONS.find(p => p.value === state.globalUserPosition)?.prompt ?? state.globalUserPosition;
 
-    // Build char line with optional individual pose
-    const c1PoseLine = c1PoseText ? `\n   • Pose: ${c1PoseText}` : '';
-    const c2PoseLine = c2PoseText ? `\n   • Pose: ${c2PoseText}` : '';
+    activeCouples.forEach(slot => {
+      const couple = COUPLES.find(c => c.id === slot.coupleKey);
+      if (!couple) return;
+      if (couple.char1IsFilmLiveAction || couple.char2IsFilmLiveAction) hasFilmChar = true;
+      const couplePoseText = COUPLE_POSES.find(p => p.value === slot.couplePose)?.prompt ?? slot.couplePose;
+      const artText = lookup(ART_STYLES, slot.artStyle);
 
-    if (slot.userPosition === 'between') {
-      charLines.push(
-        `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
-      );
-      i++;
-      charLines.push(
-        `${i}. [REFERENCE PERSON — YOU — sitting BETWEEN this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting awkwardly between two people who used to be together\n   • Art style: fully photorealistic, natural cinematic lighting`
-      );
-      i++;
-      charLines.push(
-        `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
-      );
-      i++;
+      const resolveCharPose = (poseId: string): string => {
+        if (!poseId) return '';
+        if (COUPLE_CHAR_POSES[poseId]) return COUPLE_CHAR_POSES[poseId];
+        return lookup(POSES, poseId);
+      };
+      const c1PoseText = slot.advancedMode && slot.char1Pose ? resolveCharPose(slot.char1Pose) : '';
+      const c2PoseText = slot.advancedMode && slot.char2Pose ? resolveCharPose(slot.char2Pose) : '';
+      const c1PoseLine = c1PoseText ? `\n   • Pose: ${c1PoseText}` : '';
+      const c2PoseLine = c2PoseText ? `\n   • Pose: ${c2PoseText}` : '';
 
-      coupleContextLines.push(
-        `BETWEEN COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
-        `Source: "${couple.source}"\n` +
-        `Why they broke up: ${couple.breakupReason}\n` +
-        `Couple dynamic: ${couplePoseText}\n` +
-        `Position: [REFERENCE PERSON / YOU] is sitting BETWEEN them — caught in the middle of this unresolved tension. The emotional weight is palpable. YOU are the awkward third presence between two people who once loved each other.`
-      );
-    } else {
       charLines.push(
         `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
       );
@@ -122,20 +105,88 @@ export function buildPrompt(state: BuilderState): string {
         `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
       );
       i++;
-      charLines.push(
-        `${i}. [REFERENCE PERSON — YOU — sitting BESIDE this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting next to the couple, witnessing their uncomfortable silence\n   • Art style: fully photorealistic, natural cinematic lighting`
-      );
-      i++;
 
       coupleContextLines.push(
-        `BESIDE COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
+        `COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
         `Source: "${couple.source}"\n` +
         `Why they broke up: ${couple.breakupReason}\n` +
-        `Couple dynamic: ${couplePoseText}\n` +
-        `Position: [REFERENCE PERSON / YOU] is sitting BESIDE them — an outside witness to the heavy silence between two people who used to be everything to each other.`
+        `Couple dynamic: ${couplePoseText}`
       );
-    }
-  });
+    });
+
+    // Add user once with global position
+    charLines.push(
+      `${i}. [REFERENCE PERSON — YOU]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Position: ${globalPosText}\n   • Art style: fully photorealistic, natural cinematic lighting`
+    );
+    i++;
+
+    coupleContextLines.push(
+      `GLOBAL USER POSITION (2 COUPLES)\n${globalPosText}`
+    );
+  } else {
+    // ── Per-couple position mode (original behavior) ──
+    activeCouples.forEach(slot => {
+      const couple = COUPLES.find(c => c.id === slot.coupleKey);
+      if (!couple) return;
+      if (couple.char1IsFilmLiveAction || couple.char2IsFilmLiveAction) hasFilmChar = true;
+      const couplePoseText = COUPLE_POSES.find(p => p.value === slot.couplePose)?.prompt ?? slot.couplePose;
+      const artText = lookup(ART_STYLES, slot.artStyle);
+
+      const resolveCharPose = (poseId: string): string => {
+        if (!poseId) return '';
+        if (COUPLE_CHAR_POSES[poseId]) return COUPLE_CHAR_POSES[poseId];
+        return lookup(POSES, poseId);
+      };
+      const c1PoseText = slot.advancedMode && slot.char1Pose ? resolveCharPose(slot.char1Pose) : '';
+      const c2PoseText = slot.advancedMode && slot.char2Pose ? resolveCharPose(slot.char2Pose) : '';
+      const c1PoseLine = c1PoseText ? `\n   • Pose: ${c1PoseText}` : '';
+      const c2PoseLine = c2PoseText ? `\n   • Pose: ${c2PoseText}` : '';
+
+      if (slot.userPosition === 'between') {
+        charLines.push(
+          `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
+        );
+        i++;
+        charLines.push(
+          `${i}. [REFERENCE PERSON — YOU — sitting BETWEEN this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting awkwardly between two people who used to be together\n   • Art style: fully photorealistic, natural cinematic lighting`
+        );
+        i++;
+        charLines.push(
+          `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
+        );
+        i++;
+
+        coupleContextLines.push(
+          `BETWEEN COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
+          `Source: "${couple.source}"\n` +
+          `Why they broke up: ${couple.breakupReason}\n` +
+          `Couple dynamic: ${couplePoseText}\n` +
+          `Position: [REFERENCE PERSON / YOU] is sitting BETWEEN them — caught in the middle of this unresolved tension. The emotional weight is palpable. YOU are the awkward third presence between two people who once loved each other.`
+        );
+      } else {
+        charLines.push(
+          `${i}. ${couple.char1PromptName}\n   • Part of former couple from "${couple.source}"${c1PoseLine}\n   • Art style: ${artText}`
+        );
+        i++;
+        charLines.push(
+          `${i}. ${couple.char2PromptName}\n   • Part of former couple from "${couple.source}"${c2PoseLine}\n   • Art style: ${artText}`
+        );
+        i++;
+        charLines.push(
+          `${i}. [REFERENCE PERSON — YOU — sitting BESIDE this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting next to the couple, witnessing their uncomfortable silence\n   • Art style: fully photorealistic, natural cinematic lighting`
+        );
+        i++;
+
+        coupleContextLines.push(
+          `BESIDE COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
+          `Source: "${couple.source}"\n` +
+          `Why they broke up: ${couple.breakupReason}\n` +
+          `Couple dynamic: ${couplePoseText}\n` +
+          `Position: [REFERENCE PERSON / YOU] is sitting BESIDE them — an outside witness to the heavy silence between two people who used to be everything to each other.`
+        );
+      }
+    });
+  }
 
   // ── Build individual character entries ──
   state.characterSlots.forEach(slot => {

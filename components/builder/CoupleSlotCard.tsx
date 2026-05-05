@@ -45,11 +45,12 @@ interface Props {
   slot: CoupleSlot;
   slotNumber: number;
   canRemove: boolean;
+  globalPositionActive: boolean;
   onRemove: () => void;
   onUpdate: (field: keyof CoupleSlot, value: string | null) => void;
 }
 
-export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, onUpdate }: Props) {
+export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPositionActive, onRemove, onUpdate }: Props) {
   const selectedCouple = COUPLES.find(c => c.id === slot.coupleKey);
   const char1Name = selectedCouple ? selectedCouple.char1PromptName.split('(')[0].trim() : 'Karakter 1';
   const char2Name = selectedCouple ? selectedCouple.char2PromptName.split('(')[0].trim() : 'Karakter 2';
@@ -87,17 +88,22 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, onRemove, 
           </p>
         )}
 
-        {/* User position — simple select instead of toggle buttons */}
-        <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
-          <SelectTrigger><SelectValue options={[
-            { value: 'between', label: 'Between — kamu di tengah couple' },
-            { value: 'beside', label: 'Beside — kamu di samping couple' },
-          ]} /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="between">Between — kamu di tengah couple</SelectItem>
-            <SelectItem value="beside">Beside — kamu di samping couple</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* User position — hidden when global position overrides */}
+        {!globalPositionActive && (
+          <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
+            <SelectTrigger><SelectValue options={[
+              { value: 'between', label: 'Between — kamu di tengah couple' },
+              { value: 'beside', label: 'Beside — kamu di samping couple' },
+            ]} placeholder="— Posisi diatur global —" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="between">Between — kamu di tengah couple</SelectItem>
+              <SelectItem value="beside">Beside — kamu di samping couple</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+        {globalPositionActive && (
+          <p className="text-[11px] text-dusty-rose/60 italic py-1">📍 Posisi diatur dari dropdown global di atas</p>
+        )}
 
         {/* Couple dynamic — searchable */}
         <SearchableSelect

@@ -8,7 +8,7 @@ export interface CharacterSlot {
 export interface CoupleSlot {
   id: string;
   coupleKey: string | null;
-  userPosition: 'between' | 'beside';
+  userPosition: 'between' | 'beside' | '';
   couplePose: string;
   advancedMode: boolean;
   char1Pose: string;
@@ -38,6 +38,7 @@ export interface BuilderState {
   bgCustom: string;
   characterSlots: CharacterSlot[];
   coupleSlots: CoupleSlot[];
+  globalUserPosition: string;
 
   userOutfit: string;
   userPose: string;
@@ -59,4 +60,5 @@ export type BuilderAction =
   | { type: 'SET_USER_FIELD'; field: 'userOutfit' | 'userPose'; value: string | null }
   | { type: 'SET_VIBE'; value: string | null }
   | { type: 'SET_CAMERA_FIELD'; field: 'cameraAngle' | 'photoStyle' | 'composition'; value: string | null }
+  | { type: 'SET_GLOBAL_USER_POSITION'; value: string }
   | { type: 'RESET_ALL' };

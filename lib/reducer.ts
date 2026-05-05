@@ -13,6 +13,7 @@ export const INITIAL_STATE: BuilderState = {
   bgCustom: '',
   characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
   coupleSlots: [],
+  globalUserPosition: '',
   userOutfit: 'ref-photo',
   userPose: 'duduk-stare',
   vibe: 'nongkrong',
@@ -99,11 +100,19 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
     case 'SET_CAMERA_FIELD':
       if (action.value === null) return state;
       return { ...state, [action.field]: action.value };
+    case 'SET_GLOBAL_USER_POSITION': {
+      // When global position is set, reset individual couple userPositions
+      const newCouples = action.value
+        ? state.coupleSlots.map(s => ({ ...s, userPosition: '' as const }))
+        : state.coupleSlots;
+      return { ...state, globalUserPosition: action.value, coupleSlots: newCouples };
+    }
     case 'RESET_ALL':
       return {
         ...INITIAL_STATE,
         characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
         coupleSlots: [],
+        globalUserPosition: '',
       };
     default:
       return state;
