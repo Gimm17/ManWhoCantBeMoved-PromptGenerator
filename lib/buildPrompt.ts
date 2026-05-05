@@ -36,7 +36,14 @@ FACE FIDELITY — REFERENCE PERSON — NON-NEGOTIABLE
 • DO NOT apply AI face-averaging, facial structure changes, or any artistic reinterpretation
 • Every feature must exactly match the reference photo: eyes, nose, lip line, jawline, cheekbones, skin tone, glasses frame, hair style and color
 • The person must be immediately recognizable as the same individual from the reference photo
-• Treat this as identity-critical photo compositing, not character design`;
+• Treat this as identity-critical photo compositing, not character design
+
+POSE OVERRIDE — CRITICAL
+• From the uploaded reference photo, extract ONLY: face, facial features, hair style, and general fashion sense
+• COMPLETELY IGNORE the body pose, posture, hand position, head tilt, and body angle from the reference photo
+• The POSE and BODY POSITION of [YOU / Reference Person] MUST follow EXACTLY what is specified in the CHARACTERS section above — NOT the pose in the reference photo
+• If the prompt says "sitting with arms crossed" but the reference photo shows the person standing — the generated image MUST show the person SITTING with arms crossed
+• The reference photo is for FACE IDENTITY ONLY — all body language and positioning comes from the prompt`;
 
 export function buildPrompt(state: BuilderState): string {
   const preset = SCENE_PRESETS.find(p => p.id === state.scenePresetId);
@@ -118,7 +125,7 @@ export function buildPrompt(state: BuilderState): string {
 
     // Add user once with global position
     charLines.push(
-      `${i}. [REFERENCE PERSON — YOU]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Position: ${globalPosText}\n   • Art style: fully photorealistic, natural cinematic lighting`
+      `${i}. [REFERENCE PERSON — YOU]\n   • Face: CRITICAL — reconstruct face with 100% exactness from the uploaded reference photo (face and hair ONLY — IGNORE the pose/posture in the reference photo)\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText} (THIS overrides whatever pose is in the reference photo)\n   • Position: ${globalPosText}\n   • Art style: fully photorealistic, natural cinematic lighting`
     );
     i++;
 
@@ -150,7 +157,7 @@ export function buildPrompt(state: BuilderState): string {
         );
         i++;
         charLines.push(
-          `${i}. [REFERENCE PERSON — YOU — sitting BETWEEN this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting awkwardly between two people who used to be together\n   • Art style: fully photorealistic, natural cinematic lighting`
+          `${i}. [REFERENCE PERSON — YOU — sitting BETWEEN this former couple]\n   • Face: CRITICAL — reconstruct face from the uploaded reference photo (face and hair ONLY — IGNORE the pose in the reference photo)\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText} (THIS overrides whatever pose is in the reference photo)\n   • Art style: fully photorealistic, natural cinematic lighting`
         );
         i++;
         charLines.push(
@@ -175,7 +182,7 @@ export function buildPrompt(state: BuilderState): string {
         );
         i++;
         charLines.push(
-          `${i}. [REFERENCE PERSON — YOU — sitting BESIDE this former couple]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: sitting next to the couple, witnessing their uncomfortable silence\n   • Art style: fully photorealistic, natural cinematic lighting`
+          `${i}. [REFERENCE PERSON — YOU — sitting BESIDE this former couple]\n   • Face: CRITICAL — reconstruct face from the uploaded reference photo (face and hair ONLY — IGNORE the pose in the reference photo)\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText} (THIS overrides whatever pose is in the reference photo)\n   • Art style: fully photorealistic, natural cinematic lighting`
         );
         i++;
 
@@ -207,7 +214,7 @@ export function buildPrompt(state: BuilderState): string {
   // If no couples, add user as standalone (original behavior)
   if (!hasCouples) {
     charLines.push(
-      `${i}. [REFERENCE PERSON — real individual from uploaded reference photo]\n   • Face: CRITICAL — reconstruct face with 100% photographic exactness from the uploaded reference photo\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText}\n   • Art style: fully photorealistic, natural cinematic lighting`
+      `${i}. [REFERENCE PERSON — real individual from uploaded reference photo]\n   • Face: CRITICAL — reconstruct face with 100% exactness from the uploaded reference photo (face and hair ONLY — IGNORE the body pose in the reference photo)\n   • Outfit: ${userOutfitText}\n   • Pose: ${userPoseText} (THIS overrides whatever pose is in the reference photo — follow this pose EXACTLY)\n   • Art style: fully photorealistic, natural cinematic lighting`
     );
   }
 
