@@ -53,6 +53,7 @@ export interface BuilderState {
 
   userOutfit: string;
   userPose: string;
+  userPosition: string;
   vibe: string;
   cameraAngle: string;
   photoStyle: string;
@@ -69,6 +70,7 @@ export type BuilderAction =
   | { type: 'REMOVE_COUPLE_SLOT'; id: string }
   | { type: 'UPDATE_COUPLE_SLOT'; id: string; field: keyof CoupleSlot; value: string | null }
   | { type: 'SET_USER_FIELD'; field: 'userOutfit' | 'userPose'; value: string | null }
+  | { type: 'SET_USER_POSITION'; value: string }
   | { type: 'SET_VIBE'; value: string | null }
   | { type: 'SET_CAMERA_FIELD'; field: 'cameraAngle' | 'photoStyle' | 'composition'; value: string | null }
   | { type: 'SET_GLOBAL_USER_POSITION'; value: string }

@@ -1,6 +1,9 @@
 'use client';
+import { useMemo } from 'react';
 import { useBuilder } from '@/context/BuilderContext';
 import { POSES } from '@/data/poses';
+import { getAvailablePositions } from '@/data/positions';
+import { isPosePositionCompatible, getPosePosture, getPostureLabel } from '@/lib/poseCompat';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 
@@ -20,6 +23,35 @@ const POSE_OPTIONS = POSES.map(p => ({ value: p.value, label: p.label, group: p.
 
 export default function UserSlotCard() {
   const { state, dispatch } = useBuilder();
+
+  // Dynamically compute available positions based on active couples/artists
+  const coupleCount = state.coupleSlots.filter(s => s.coupleKey).length;
+  const artistCount = state.artistSlots.filter(s => s.artistKey).length;
+  const availablePositions = useMemo(
+    () => getAvailablePositions(coupleCount, artistCount),
+    [coupleCount, artistCount]
+  );
+
+  const userPosePosture = getPosePosture(state.userPose);
+  const userPostureLabel = getPostureLabel(userPosePosture);
+
+  // Group labels for display
+  const groupLabels: Record<string, string> = {
+    'base': '📍 Posisi Umum',
+    'couple': '💔 Posisi Couple',
+    'couple-2': '💔💔 Posisi 2 Couple',
+    'band': '🎤 Posisi Band/Artist',
+  };
+
+  // Build options with group headers
+  const positionOptions = availablePositions.map(p => ({
+    value: p.value,
+    label: p.label,
+    group: groupLabels[p.group] ?? '',
+  }));
+
+  // Check if current position is still available
+  const currentPosStillValid = !state.userPosition || availablePositions.some(p => p.value === state.userPosition);
 
   return (
     <div className="bg-page rounded-lg border border-dashed border-dusty-rose p-4 flex flex-col gap-2">
@@ -51,6 +83,32 @@ export default function UserSlotCard() {
           options={POSE_OPTIONS}
           placeholder="Pilih pose..."
         />
+
+        {/* Position — searchable with dynamic groups */}
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-medium text-forest-muted flex items-center gap-1">
+            📍 Posisi kamu di scene
+            {!currentPosStillValid && (
+              <span className="text-[9px] text-red-400 font-normal">⚠️ posisi sebelumnya sudah tidak valid</span>
+            )}
+          </label>
+          <SearchableSelect
+            value={currentPosStillValid ? (state.userPosition || '_none') : '_none'}
+            onValueChange={v => dispatch({ type: 'SET_USER_POSITION', value: v === '_none' ? '' : v })}
+            options={positionOptions}
+            placeholder="— Tidak ada / default —"
+          />
+          {/* Compatibility warning */}
+          {state.userPosition && (() => {
+            const compatible = isPosePositionCompatible(state.userPose, state.userPosition);
+            if (compatible) return null;
+            return (
+              <p className="text-[10px] text-amber-600 mt-0.5">
+                ⚠️ Pose kamu ({userPostureLabel}) mungkin tidak cocok dengan posisi ini. Prompt akan auto-adjust.
+              </p>
+            );
+          })()}
+        </div>
       </div>
     </div>
   );

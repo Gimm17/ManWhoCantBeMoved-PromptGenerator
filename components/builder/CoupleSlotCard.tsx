@@ -93,29 +93,7 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPosi
           </p>
         )}
 
-        {/* User position — hidden when global position overrides, with compatibility warnings */}
-        {!globalPositionActive && (
-          <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
-            <SelectTrigger><SelectValue options={[
-              { value: 'between', label: 'Between — kamu di tengah couple' },
-              { value: 'beside', label: 'Beside — kamu di samping couple' },
-            ]} placeholder="— Posisi diatur global —" /></SelectTrigger>
-            <SelectContent>
-              {[{ value: 'between', label: 'Between — kamu di tengah couple' }, { value: 'beside', label: 'Beside — kamu di samping couple' }].map(o => {
-                const compatible = isPosePositionCompatible(state.userPose, o.value);
-                return (
-                  <SelectItem key={o.value} value={o.value}>
-                    <span className={compatible ? '' : 'line-through text-red-400/60 opacity-50'}>{o.label}</span>
-                    {!compatible && <span className="text-[9px] text-red-400 ml-1">⚠️ pose {userPostureLabel}</span>}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        )}
-        {globalPositionActive && (
-          <p className="text-[11px] text-dusty-rose/60 italic py-1">📍 Posisi diatur dari dropdown global di atas</p>
-        )}
+        {/* User position now managed centrally in UserSlotCard */}
 
         {/* Couple dynamic — searchable */}
         <SearchableSelect

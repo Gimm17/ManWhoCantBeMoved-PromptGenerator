@@ -1,10 +1,8 @@
 'use client';
-import { ARTISTS, ARTIST_REGIONS, BAND_USER_POSITIONS, BAND_DISPLAY_MODES } from '@/data/artists';
+import { ARTISTS, ARTIST_REGIONS, BAND_DISPLAY_MODES } from '@/data/artists';
 import { POSES } from '@/data/poses';
 import { ART_STYLES } from '@/data/styles';
 import { ArtistSlot } from '@/lib/types';
-import { useBuilder } from '@/context/BuilderContext';
-import { isPosePositionCompatible, getPosePosture, getPostureLabel } from '@/lib/poseCompat';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -26,12 +24,9 @@ interface Props {
 }
 
 export default function ArtistSlotCard({ slot, slotNumber, canRemove, onRemove, onUpdate }: Props) {
-  const { state } = useBuilder();
   const selectedArtist = ARTISTS.find(a => a.id === slot.artistKey);
   const isBand = selectedArtist?.type === 'band';
   const members = selectedArtist?.members ?? [];
-  const userPosePosture = getPosePosture(state.userPose);
-  const userPostureLabel = getPostureLabel(userPosePosture);
 
   /** Toggle a member in selectedMembers array */
   function toggleMember(memberId: string) {
@@ -109,28 +104,7 @@ export default function ArtistSlotCard({ slot, slotNumber, canRemove, onRemove, 
               </div>
             )}
 
-            {/* Band user position — with compatibility warnings */}
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-medium text-forest-muted">📍 Posisi kamu</label>
-              <Select value={slot.userPosition} onValueChange={v => onUpdate('userPosition', v)}>
-                <SelectTrigger><SelectValue options={BAND_USER_POSITIONS} placeholder="— Pilih posisi —" /></SelectTrigger>
-                <SelectContent>
-                  {BAND_USER_POSITIONS.map(o => {
-                    const compatible = isPosePositionCompatible(state.userPose, o.value);
-                    return (
-                      <SelectItem key={o.value} value={o.value}>
-                        <span className={compatible ? '' : 'line-through text-red-400/60 opacity-50'}>
-                          {o.label}
-                        </span>
-                        {!compatible && (
-                          <span className="text-[9px] text-red-400 ml-1">⚠️ pose {userPostureLabel}</span>
-                        )}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* User position now managed centrally in UserSlotCard */}
           </div>
         )}
 
