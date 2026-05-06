@@ -20,18 +20,20 @@ export default function CharacterSection() {
       <UserSlotCard />
 
       {/* Character slots */}
-      <div className="flex flex-col gap-3">
-        {state.characterSlots.map((slot, index) => (
-          <CharacterSlotCard
-            key={slot.id}
-            slot={slot}
-            slotNumber={index + 1}
-            canRemove={state.characterSlots.length > 1}
-            onRemove={() => dispatch({ type: 'REMOVE_CHARACTER_SLOT', id: slot.id })}
-            onUpdate={(field, value) => dispatch({ type: 'UPDATE_CHARACTER_SLOT', id: slot.id, field, value })}
-          />
-        ))}
-      </div>
+      {state.characterSlots.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {state.characterSlots.map((slot, index) => (
+            <CharacterSlotCard
+              key={slot.id}
+              slot={slot}
+              slotNumber={index + 1}
+              canRemove={true}
+              onRemove={() => dispatch({ type: 'REMOVE_CHARACTER_SLOT', id: slot.id })}
+              onUpdate={(field, value) => dispatch({ type: 'UPDATE_CHARACTER_SLOT', id: slot.id, field, value })}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Add button */}
       {canAdd && (

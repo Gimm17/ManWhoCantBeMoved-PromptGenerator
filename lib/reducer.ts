@@ -11,7 +11,7 @@ export const INITIAL_STATE: BuilderState = {
   food: 'golda-taro-chitato',
   bgProps: 'motor-indomaret',
   bgCustom: '',
-  characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
+  characterSlots: [],
   coupleSlots: [],
   globalUserPosition: '',
   artistSlots: [],
@@ -133,7 +133,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
     case 'RESET_ALL':
       return {
         ...INITIAL_STATE,
-        characterSlots: [{ id: nanoid(), characterKey: null, pose: '', artStyle: 'realistic' }],
+        characterSlots: [],
         coupleSlots: [],
         globalUserPosition: '',
         artistSlots: [],
