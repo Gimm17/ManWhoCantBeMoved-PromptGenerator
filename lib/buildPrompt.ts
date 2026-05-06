@@ -291,13 +291,14 @@ export function buildPrompt(state: BuilderState): string {
   if (foodText) settingLines.push(`On the table: ${foodText}`);
   if (bgPropsText) settingLines.push(`Background: ${bgPropsText}`);
 
-  // Build concept text
-  let conceptText = `CONCEPT\n"The Man Who Can't Be Moved" — a fictional gathering of iconic characters who all share the same emotional experience: being left behind by someone they loved, unable to fully move on. This is a creative fan art crossover scene.`;
+  // Build concept text — explicitly restrict to listed characters only
+  const totalCharCount = charLines.length;
+  let conceptText = `CONCEPT\n"The Man Who Can't Be Moved" — a creative fan art crossover scene. The characters listed below are gathering in one location. This is a fictional scene for entertainment purposes.\n\n⚠️ STRICT CHARACTER LOCK: This scene contains EXACTLY ${totalCharCount} characters/people — NO MORE, NO LESS. Do NOT add any characters that are not explicitly listed in the CHARACTERS section below. Do NOT invent, assume, or hallucinate additional characters based on the theme or concept. If a character is not listed below, they DO NOT EXIST in this image.`;
   if (hasCouples) {
-    conceptText += `\n\nBETWEEN / BESIDE COUPLE ELEMENT\nThis scene also features the "Between Couple / Beside Couple" concept — where YOU (the reference person) are placed in the middle of or next to a famous couple who broke up or divorced. The awkwardness, tension, and unresolved emotions between the former couple create a unique emotional dynamic with YOU caught in the crossfire.`;
+    conceptText += `\n\nBETWEEN / BESIDE COUPLE ELEMENT\nThis scene also features the "Between Couple / Beside Couple" concept — where YOU (the reference person) are placed in the middle of or next to a famous couple who broke up or divorced.`;
   }
   if (hasArtists) {
-    conceptText += `\n\nARTIST / BAND ELEMENT\nReal-world musicians are also present at this nongkrong gathering — hanging out casually in the same location, sharing the same late-night vibe. They are NOT performing; they are just chilling as part of the group.`;
+    conceptText += `\n\nARTIST / BAND ELEMENT\nReal-world musicians are also present at this gathering — hanging out casually in the same location. They are NOT performing; they are just chilling as part of the group.`;
   }
 
   const sections = [
@@ -312,7 +313,7 @@ export function buildPrompt(state: BuilderState): string {
     `CAMERA\nAngle: ${cameraAngleText}\nComposition: ${compositionText}`,
     `RENDERING STYLE\n${photoStyleText}`,
     hasFilmChar ? FILM_NOTE : '',
-    `RENDERING RULES\n• Photorealistic characters: full cinematic HDR, natural skin texture, accurate hair, realistic lighting\n• Anime/cel-shaded characters: 2D Spider-Verse visual language, Ben-Day halftone dots, thick black ink outlines, vibrant flat fill colors\n• Standard anime characters: clean lineart, vibrant expressive colors\n• All characters share consistent lighting from the scene's ${todText}\n• No masks — all faces fully visible or in side profile`,
+    `RENDERING RULES\n• EXACTLY ${totalCharCount} characters in this image — no more, no fewer. Do NOT add any character not listed above.\n• Photorealistic characters: full cinematic HDR, natural skin texture, accurate hair, realistic lighting\n• Anime/cel-shaded characters: 2D Spider-Verse visual language, Ben-Day halftone dots, thick black ink outlines, vibrant flat fill colors\n• Standard anime characters: clean lineart, vibrant expressive colors\n• All characters share consistent lighting from the scene's ${todText}\n• No masks — all faces fully visible or in side profile\n• FORBIDDEN: Do NOT add background characters, passersby, bystanders, or any other person not explicitly listed in the CHARACTERS section`,
     FACE_FIDELITY,
   ].filter(Boolean);
 
