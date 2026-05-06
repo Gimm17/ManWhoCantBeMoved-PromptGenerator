@@ -95,13 +95,15 @@ export default function CoupleSlotCard({ slot, slotNumber, canRemove, globalPosi
 
         {/* User position now managed centrally in UserSlotCard */}
 
-        {/* Couple dynamic — searchable */}
-        <SearchableSelect
-          value={slot.couplePose}
-          onValueChange={v => onUpdate('couplePose', v)}
-          options={COUPLE_POSE_OPTIONS}
-          placeholder="Pilih couple dynamic..."
-        />
+        {/* Couple dynamic — hidden when advanced mode is on (individual poses override) */}
+        {!slot.advancedMode && (
+          <SearchableSelect
+            value={slot.couplePose}
+            onValueChange={v => onUpdate('couplePose', v)}
+            options={COUPLE_POSE_OPTIONS}
+            placeholder="Pilih couple dynamic..."
+          />
+        )}
 
         {/* Advanced toggle */}
         <button

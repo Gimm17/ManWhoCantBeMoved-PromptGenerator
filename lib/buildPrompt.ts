@@ -136,11 +136,11 @@ export function buildPrompt(state: BuilderState): string {
       i++;
     }
 
+    const dynamicLine = slot.advancedMode ? '' : `\nCouple dynamic: ${couplePoseText}`;
     coupleContextLines.push(
       `COUPLE — ${couple.char1PromptName.split('(')[0].trim()} × ${couple.char2PromptName.split('(')[0].trim()}\n` +
       `Source: "${couple.source}"\n` +
-      `Why they broke up: ${couple.breakupReason}\n` +
-      `Couple dynamic: ${couplePoseText}`
+      `Why they broke up: ${couple.breakupReason}${dynamicLine}`
     );
   });
 
