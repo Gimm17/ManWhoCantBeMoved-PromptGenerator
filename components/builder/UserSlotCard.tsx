@@ -1,6 +1,9 @@
 'use client';
 import { useMemo } from 'react';
 import { useBuilder } from '@/context/BuilderContext';
+import { CHARACTERS } from '@/data/characters';
+import { COUPLES } from '@/data/couples';
+import { ARTISTS } from '@/data/artists';
 import { POSES } from '@/data/poses';
 import { getAvailablePositions } from '@/data/positions';
 import { isPosePositionCompatible, getPosePosture, getPostureLabel } from '@/lib/poseCompat';
@@ -21,21 +24,121 @@ export const OUTFIT_OPTIONS = [
 /** Flatten poses with group info for SearchableSelect */
 const POSE_OPTIONS = POSES.map(p => ({ value: p.value, label: p.label, group: p.group }));
 
+/** Extract short display name from a prompt name like "Takaki Toono (from 5cm/s)" → "Takaki Toono" */
+function shortName(promptName: string): string {
+  return promptName.split('(')[0].trim().split(',')[0].trim();
+}
+
+export interface LineupEntry {
+  id: string;       // unique identifier
+  name: string;     // short display name
+  source: 'couple' | 'character' | 'artist';
+}
+
+/** Build a flat ordered list of all characters in the scene */
+export function buildLineup(state: {
+  coupleSlots: { coupleKey: string | null }[];
+  characterSlots: { characterKey: string | null }[];
+  artistSlots: { artistKey: string | null; displayMode: string; selectedMembers: string[] }[];
+}): LineupEntry[] {
+  const lineup: LineupEntry[] = [];
+
+  // 1. Couple characters
+  state.coupleSlots.forEach(slot => {
+    if (!slot.coupleKey) return;
+    const couple = COUPLES.find(c => c.id === slot.coupleKey);
+    if (!couple) return;
+    lineup.push({ id: `cp-${couple.id}-1`, name: shortName(couple.char1PromptName), source: 'couple' });
+    lineup.push({ id: `cp-${couple.id}-2`, name: shortName(couple.char2PromptName), source: 'couple' });
+  });
+
+  // 2. Individual characters
+  state.characterSlots.forEach(slot => {
+    if (!slot.characterKey) return;
+    const char = CHARACTERS.find(c => c.id === slot.characterKey);
+    if (!char) return;
+    lineup.push({ id: `ch-${char.id}`, name: shortName(char.promptName), source: 'character' });
+  });
+
+  // 3. Artist/band members
+  state.artistSlots.forEach(slot => {
+    if (!slot.artistKey) return;
+    const artist = ARTISTS.find(a => a.id === slot.artistKey);
+    if (!artist) return;
+    if (artist.type === 'solo') {
+      lineup.push({ id: `ar-${artist.id}`, name: shortName(artist.promptName), source: 'artist' });
+    } else {
+      const members = artist.members ?? [];
+      let displayMembers = members;
+      if (slot.displayMode === 'vocalist-only') {
+        displayMembers = members.filter(m => m.role === 'vocalist');
+      } else if (slot.displayMode === 'custom' && slot.selectedMembers.length > 0) {
+        displayMembers = members.filter(m => slot.selectedMembers.includes(m.id));
+      }
+      displayMembers.forEach(m => {
+        lineup.push({ id: `ar-${m.id}`, name: m.name, source: 'artist' });
+      });
+    }
+  });
+
+  return lineup;
+}
+
+/** Generate dynamic position options based on lineup */
+function buildDynamicPositions(lineup: LineupEntry[]): { value: string; label: string; group: string }[] {
+  if (lineup.length < 1) return [];
+  const options: { value: string; label: string; group: string }[] = [];
+  const group = '🎯 Posisi Spesifik';
+
+  // "Between X & Y" for each adjacent pair
+  for (let idx = 0; idx < lineup.length - 1; idx++) {
+    options.push({
+      value: `dyn-between-${idx}-${idx + 1}`,
+      label: `Di antara ${lineup[idx].name} & ${lineup[idx + 1].name}`,
+      group,
+    });
+  }
+
+  // "Beside first (far left)" and "Beside last (far right)"
+  if (lineup.length >= 1) {
+    options.push({
+      value: `dyn-beside-left`,
+      label: `Di samping kiri ${lineup[0].name}`,
+      group,
+    });
+    options.push({
+      value: `dyn-beside-right`,
+      label: `Di samping kanan ${lineup[lineup.length - 1].name}`,
+      group,
+    });
+  }
+
+  return options;
+}
+
 export default function UserSlotCard() {
   const { state, dispatch } = useBuilder();
+
+  // Build the full character lineup
+  const lineup = useMemo(() => buildLineup(state), [
+    state.coupleSlots, state.characterSlots, state.artistSlots
+  ]);
 
   // Dynamically compute available positions based on active couples/artists
   const coupleCount = state.coupleSlots.filter(s => s.coupleKey).length;
   const artistCount = state.artistSlots.filter(s => s.artistKey).length;
-  const availablePositions = useMemo(
+  const staticPositions = useMemo(
     () => getAvailablePositions(coupleCount, artistCount),
     [coupleCount, artistCount]
   );
 
+  // Dynamic positions based on lineup
+  const dynamicPositions = useMemo(() => buildDynamicPositions(lineup), [lineup]);
+
   const userPosePosture = getPosePosture(state.userPose);
   const userPostureLabel = getPostureLabel(userPosePosture);
 
-  // Group labels for display
+  // Group labels for static positions
   const groupLabels: Record<string, string> = {
     'base': '📍 Posisi Umum',
     'couple': '💔 Posisi Couple',
@@ -43,15 +146,19 @@ export default function UserSlotCard() {
     'band': '🎤 Posisi Band/Artist',
   };
 
-  // Build options with group headers
-  const positionOptions = availablePositions.map(p => ({
-    value: p.value,
-    label: p.label,
-    group: groupLabels[p.group] ?? '',
-  }));
+  // Build final options: static + dynamic
+  const positionOptions = [
+    ...staticPositions.map(p => ({
+      value: p.value,
+      label: p.label,
+      group: groupLabels[p.group] ?? '',
+    })),
+    ...dynamicPositions,
+  ];
 
   // Check if current position is still available
-  const currentPosStillValid = !state.userPosition || availablePositions.some(p => p.value === state.userPosition);
+  const allValues = positionOptions.map(p => p.value);
+  const currentPosStillValid = !state.userPosition || allValues.includes(state.userPosition);
 
   return (
     <div className="bg-page rounded-lg border border-dashed border-dusty-rose p-4 flex flex-col gap-2">

@@ -9,7 +9,7 @@ import { USER_POSITIONS } from '@/data/positions';
 import { COUPLE_CHAR_POSES } from '@/components/builder/CoupleSlotCard';
 import { ART_STYLES, PHOTO_STYLES, CAMERA_ANGLES, COMPOSITIONS } from '@/data/styles';
 import { TOD_OPTIONS, WEATHER_OPTIONS, FURNITURE_OPTIONS, BG_OPTIONS } from '@/components/builder/SceneSection';
-import { OUTFIT_OPTIONS } from '@/components/builder/UserSlotCard';
+import { OUTFIT_OPTIONS, buildLineup } from '@/components/builder/UserSlotCard';
 import { VIBES } from '@/components/builder/VibeSection';
 import { BuilderState } from './types';
 
@@ -74,9 +74,31 @@ export function buildPrompt(state: BuilderState): string {
   const charLines: string[] = [];
   let i = 1;
 
+  // ── Build full lineup for dynamic position resolution ──
+  const lineup = buildLineup(state);
+
   // ── Resolve centralized user position ──
-  const userPosEntry = USER_POSITIONS.find(p => p.value === state.userPosition);
-  const userPosText = userPosEntry?.prompt ?? '';
+  let userPosText = '';
+  let dynBetweenIdx: [number, number] | null = null; // indices into lineup for between insertion
+  const pos = state.userPosition;
+
+  if (pos.startsWith('dyn-between-')) {
+    // e.g. "dyn-between-0-1" → between lineup[0] and lineup[1]
+    const parts = pos.replace('dyn-between-', '').split('-').map(Number);
+    const [a, b] = parts;
+    if (lineup[a] && lineup[b]) {
+      dynBetweenIdx = [a, b];
+      userPosText = `[YOU / Reference Person] is sitting BETWEEN ${lineup[a].name} and ${lineup[b].name} — physically placed in the gap between these two characters, shoulder to shoulder with both`;
+    }
+  } else if (pos === 'dyn-beside-left' && lineup.length > 0) {
+    userPosText = `[YOU / Reference Person] is sitting to the LEFT of ${lineup[0].name} — at the far left edge, right next to ${lineup[0].name}`;
+  } else if (pos === 'dyn-beside-right' && lineup.length > 0) {
+    userPosText = `[YOU / Reference Person] is sitting to the RIGHT of ${lineup[lineup.length - 1].name} — at the far right edge, right next to ${lineup[lineup.length - 1].name}`;
+  } else {
+    const userPosEntry = USER_POSITIONS.find(p => p.value === pos);
+    userPosText = userPosEntry?.prompt ?? '';
+  }
+
   const isCouplePosition = ['between-couple', 'beside-couple', 'center-between-both', 'between-left-couple', 'between-right-couple', 'far-from-couples'].includes(state.userPosition);
   const isBetweenCouple = state.userPosition === 'between-couple';
 
